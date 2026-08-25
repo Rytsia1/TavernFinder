@@ -87,7 +87,10 @@ it("Generates identical NPC attributes for 50 repeated runs with same seed", () 
 
 it("Matches exact output schema with non-empty string fields", () => {
   const npc = generateNpc("test_schema");
-  const requiredKeys = ["seed", "name", "title", "personality", "fear", "secret", "dialogue"];
+  const requiredKeys = [
+    "seed", "name", "title", "origin", "personality", "ideal", "bond", "flaw", "trinket", "fear", "secret", "dialogue", "markdown"
+  ];
+
   
   for (const key of requiredKeys) {
     assert.ok(key in npc, `Missing key: ${key}`);
@@ -95,6 +98,7 @@ it("Matches exact output schema with non-empty string fields", () => {
     assert.ok(npc[key].trim().length > 0, `Key ${key} cannot be empty`);
   }
 });
+
 
 it("Generates high variance across 100 random seeds", () => {
   const names = new Set();
