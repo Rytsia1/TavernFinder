@@ -37,13 +37,21 @@ import {
   Navigation,
   FileText,
   Anchor,
-  Radio
+  Radio,
+  Landmark,
+  ShieldAlert,
+  FlameKindling,
+  Crosshair,
+  UserCheck
 } from 'lucide-vue-next';
 
 import { 
   racesData, 
   mixedRaceData, 
   racialPrejudices, 
+  nationsData,
+  archonNeutrality,
+  usurperShadowData,
   continentsData, 
   globalFeatures, 
   historicalEras, 
@@ -51,10 +59,31 @@ import {
 } from '../data/codexData.js';
 
 // Top-Level Codex Section Tab
-const mainSection = ref('races'); // 'races' | 'geography' | 'chronicles' | 'power_system' | 'abyss_gnosis'
+const mainSection = ref('nations'); // 'nations' | 'races' | 'geography' | 'chronicles' | 'power_system' | 'abyss_gnosis'
 
 // ==========================================
-// 1. RACES STATE
+// 1. NATIONS STATE
+// ==========================================
+const selectedNationId = ref('varencia');
+const activeNation = computed(() => {
+  return nationsData.find(n => n.id === selectedNationId.value) || nationsData[0];
+});
+
+const nationSearch = ref('');
+const filteredNations = computed(() => {
+  if (!nationSearch.value.trim()) return nationsData;
+  const q = nationSearch.value.toLowerCase().trim();
+  return nationsData.filter(n => 
+    n.name.toLowerCase().includes(q) || 
+    n.race.toLowerCase().includes(q) || 
+    n.capital.toLowerCase().includes(q) ||
+    n.patronGod.toLowerCase().includes(q) ||
+    n.element.toLowerCase().includes(q)
+  );
+});
+
+// ==========================================
+// 2. RACES STATE
 // ==========================================
 const selectedRaceId = ref('human');
 const activeRace = computed(() => {
@@ -73,7 +102,7 @@ const filteredRaces = computed(() => {
   );
 });
 
-// Helper for Race Icons
+// Helper for Race & Element Icons
 function getRaceIcon(raceId) {
   switch (raceId) {
     case 'human': return Flame;
@@ -89,7 +118,7 @@ function getRaceIcon(raceId) {
 }
 
 // ==========================================
-// 2. GEOGRAPHY STATE
+// 3. GEOGRAPHY STATE
 // ==========================================
 const selectedContinentId = ref('ardorim');
 const activeContinent = computed(() => {
@@ -106,11 +135,6 @@ const filteredLandmarks = computed(() => {
     l.desc.toLowerCase().includes(q)
   );
 });
-
-// ==========================================
-// 3. CHRONICLES STATE
-// ==========================================
-const selectedEraId = ref(historicalEras[0].id);
 
 // ==========================================
 // 4. POWER SYSTEM DATA
@@ -166,7 +190,7 @@ const hexenzirkelCoven = [
             Codex of the World of Myria
           </h2>
           <p class="text-sm sm:text-base text-slate-300 max-w-2xl mt-2 leading-relaxed font-sans">
-            The canonical archives detailing the Seven Elemental Lineages, Continents & Oceans, Epochal Chronicles, and the Metaphysical Laws of Ether.
+            The canonical archives detailing the Seven Sovereign Nations, Elemental Lineages, Continents & Oceans, Epochal Chronicles, and the Metaphysical Laws of Ether.
           </p>
         </div>
       </div>
@@ -176,14 +200,26 @@ const hexenzirkelCoven = [
     <nav aria-label="Codex Sections" class="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-tavern-900/90 border border-tavern-border shadow-lg">
       <button
         type="button"
-        @click="mainSection = 'races'"
+        @click="mainSection = 'nations'"
         class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200"
-        :class="mainSection === 'races' 
+        :class="mainSection === 'nations' 
           ? 'bg-gradient-to-r from-amber-600/30 to-amber-700/20 text-amber-200 border border-amber-500/50 shadow-md shadow-amber-950/40' 
           : 'text-slate-400 hover:text-slate-200 hover:bg-tavern-850'"
       >
-        <Crown class="w-4 h-4 text-amber-400" />
-        <span>👑 Races of Myria</span>
+        <Landmark class="w-4 h-4 text-amber-400" />
+        <span>🏛️ Nations & Geopolitics</span>
+      </button>
+
+      <button
+        type="button"
+        @click="mainSection = 'races'"
+        class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200"
+        :class="mainSection === 'races' 
+          ? 'bg-gradient-to-r from-purple-600/30 to-purple-700/20 text-purple-200 border border-purple-500/50 shadow-md shadow-purple-950/40' 
+          : 'text-slate-400 hover:text-slate-200 hover:bg-tavern-850'"
+      >
+        <Crown class="w-4 h-4 text-purple-400" />
+        <span>👑 Races & Bloodlines</span>
       </button>
 
       <button
@@ -236,11 +272,234 @@ const hexenzirkelCoven = [
     </nav>
 
     <!-- ================================================================= -->
-    <!-- SECTION 1: THE RACES OF MYRIA (Interactive Encyclopedia)         -->
+    <!-- SECTION 1: THE SEVEN NATIONS & GEOPOLITICS (New Primary Dossier)  -->
     <!-- ================================================================= -->
-    <div v-if="mainSection === 'races'" class="space-y-10 animate-fadeIn">
+    <div v-if="mainSection === 'nations'" class="space-y-10 animate-fadeIn">
       
-      <!-- Interactive Race Selector Grid -->
+      <!-- Interactive Nation Selector Grid -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-bold font-cinzel text-amber-100 flex items-center gap-2">
+            <Landmark class="w-5 h-5 text-amber-400" />
+            Sovereignties & Realms of Myria
+          </h3>
+          <span class="text-xs text-slate-400">Select a nation to view geopolitical dossier</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button
+            v-for="nat in nationsData"
+            :key="nat.id"
+            type="button"
+            @click="selectedNationId = nat.id"
+            class="flex flex-col items-center p-3.5 rounded-xl border text-center transition-all duration-300 relative group"
+            :class="selectedNationId === nat.id 
+              ? `${nat.badgeClass} ring-2 ring-amber-500/30 scale-[1.02] shadow-lg` 
+              : 'bg-tavern-900/70 border-tavern-border text-slate-400 hover:text-slate-200 hover:bg-tavern-850/80'"
+          >
+            <component :is="getRaceIcon(nat.race.toLowerCase().replace(' ', '_').replace(/[\(\)-]/g, '').replace('halfplant', '').trim())" class="w-6 h-6 mb-1.5 transition-transform group-hover:scale-110" />
+            <span class="font-cinzel font-bold text-xs sm:text-sm tracking-wide">{{ nat.name }}</span>
+            <span class="text-[11px] opacity-75 font-mono">{{ nat.capital.split('(')[0].trim() }}</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Active Selected Nation Detailed Dossier -->
+      <section class="rounded-2xl fantasy-card border overflow-hidden transition-all duration-300" :class="activeNation.borderClass">
+        <div class="p-6 sm:p-8 bg-gradient-to-r from-tavern-900 via-tavern-850 to-tavern-900 border-b border-tavern-border/80">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-2 flex-wrap">
+                <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider" :class="activeNation.badgeClass">
+                  {{ activeNation.element }} • {{ activeNation.race }}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-tavern-800 text-amber-300 border border-amber-500/30">
+                  {{ activeNation.government }}
+                </span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-bold font-cinzel text-amber-100">
+                {{ activeNation.name }}
+              </h3>
+              <p class="text-xs sm:text-sm font-medium text-amber-400/90 tracking-wide mt-0.5 italic">
+                {{ activeNation.title }}
+              </p>
+            </div>
+
+            <!-- Quick Specs Box -->
+            <div class="bg-tavern-950/70 p-3.5 rounded-xl border border-tavern-border/70 text-xs space-y-1.5 shrink-0">
+              <div class="flex items-center gap-2">
+                <Crown class="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span class="text-slate-400">Patron:</span>
+                <span class="font-medium text-amber-200">{{ activeNation.patronGod }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span class="text-slate-400">Capital:</span>
+                <span class="font-medium text-slate-200">{{ activeNation.capital }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <UserCheck class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span class="text-slate-400">Ruler:</span>
+                <span class="font-medium text-slate-200">{{ activeNation.ruler }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-6">
+          <!-- Culture & Military -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-4 rounded-xl bg-tavern-900/80 border border-tavern-border/60">
+              <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 mb-2">
+                <Sparkles class="w-3.5 h-3.5" />
+                Culture & Society
+              </span>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {{ activeNation.cultureSummary }}
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-tavern-900/80 border border-tavern-border/60">
+              <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 mb-2">
+                <Shield class="w-3.5 h-3.5" />
+                Military Strength & Defense
+              </span>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {{ activeNation.military }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Geopolitical Tensions -->
+          <div class="p-4 rounded-xl bg-tavern-900/60 border border-rose-500/20">
+            <span class="text-xs font-semibold uppercase tracking-wider text-rose-400 flex items-center gap-1.5 mb-2">
+              <AlertOctagon class="w-3.5 h-3.5" />
+              Key Geopolitical Tensions
+            </span>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-300">
+              <li v-for="(tension, idx) in activeNation.tensions" :key="idx" class="flex items-start gap-2">
+                <span class="text-rose-400 mt-1">•</span>
+                <span>{{ tension }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Role in the Story -->
+          <div class="p-4 rounded-xl bg-tavern-950/70 border border-tavern-border text-xs sm:text-sm">
+            <span class="text-xs font-semibold uppercase tracking-wider text-purple-300 flex items-center gap-1.5 mb-2">
+              <Scroll class="w-3.5 h-3.5 text-purple-400" />
+              Role in the Chronicles of Avalon
+            </span>
+            <p class="text-slate-300 leading-relaxed font-sans">
+              {{ activeNation.storyRole }}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nations Comparison Matrix Table -->
+      <section class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 class="text-lg font-bold font-cinzel text-amber-100 flex items-center gap-2">
+            <Scroll class="w-4 h-4 text-amber-400" />
+            Sovereignty Comparison Matrix
+          </h3>
+          <div class="relative w-full sm:w-64">
+            <Search class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+            <input
+              v-model="nationSearch"
+              type="text"
+              placeholder="Search nations, races, gods..."
+              class="w-full bg-tavern-900 border border-tavern-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/50"
+            />
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-tavern-border bg-tavern-900/80 shadow-xl">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-tavern-950/80 text-slate-400 uppercase font-cinzel tracking-wider text-[11px] border-b border-tavern-border">
+              <tr>
+                <th class="py-3 px-4">Nation</th>
+                <th class="py-3 px-4">Dominant Race</th>
+                <th class="py-3 px-4">Patron God</th>
+                <th class="py-3 px-4">Capital</th>
+                <th class="py-3 px-4">Government</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-tavern-border/50 text-slate-300 font-sans">
+              <tr 
+                v-for="n in filteredNations" 
+                :key="n.id"
+                @click="selectedNationId = n.id"
+                class="hover:bg-tavern-850/80 cursor-pointer transition-colors"
+                :class="selectedNationId === n.id ? 'bg-amber-500/10' : ''"
+              >
+                <td class="py-3 px-4 font-bold text-amber-200 font-cinzel flex items-center gap-2">
+                  <Landmark class="w-4 h-4 shrink-0 text-amber-400" />
+                  {{ n.name }}
+                </td>
+                <td class="py-3 px-4">{{ n.race }}</td>
+                <td class="py-3 px-4 font-medium">{{ n.patronGod.split(',')[0] }}</td>
+                <td class="py-3 px-4 text-slate-300 font-mono text-xs">{{ n.capital.split('(')[0].trim() }}</td>
+                <td class="py-3 px-4 text-xs text-slate-400">{{ n.government }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- The Neutrality of the Archons -->
+      <section class="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-amber-950/30 via-tavern-900 to-tavern-950 border border-amber-500/40 shadow-2xl relative overflow-hidden space-y-4">
+        <div class="flex items-center gap-2 text-amber-300 font-cinzel font-bold text-lg">
+          <ShieldAlert class="w-5 h-5 text-amber-400" />
+          {{ archonNeutrality.title }}
+        </div>
+        <p class="text-xs font-semibold text-amber-400/90 tracking-wide uppercase font-mono">
+          {{ archonNeutrality.subtitle }}
+        </p>
+
+        <blockquote class="p-4 rounded-xl bg-tavern-950/80 border-l-4 border-amber-500 text-xs sm:text-sm italic text-amber-100 font-serif leading-relaxed">
+          "{{ archonNeutrality.oath }}"
+        </blockquote>
+
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+          {{ archonNeutrality.role }}
+        </p>
+      </section>
+
+      <!-- The Shadow of The Usurpers (Geopolitical Conspiracies) -->
+      <section class="space-y-4">
+        <div class="flex items-center gap-2 text-purple-300 font-cinzel font-bold text-lg">
+          <EyeOff class="w-5 h-5 text-purple-400" />
+          The Shadow of The Usurpers across the Seven Nations
+        </div>
+        <p class="text-xs text-slate-400">
+          Behind every border dispute, trade embargo, and succession crisis lies a hidden hand manipulating world leaders.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div 
+            v-for="u in usurperShadowData" 
+            :key="u.name"
+            class="p-4 rounded-xl bg-tavern-900/90 border border-purple-500/20 hover:border-purple-500/50 transition-colors"
+          >
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-cinzel font-bold text-sm text-amber-200">{{ u.name }}</span>
+              <span class="text-[11px] font-mono text-purple-300 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">{{ u.alias }}</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mt-2 font-sans">
+              {{ u.manipulation }}
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- SECTION 2: RACES & BLOODLINES                                    -->
+    <!-- ================================================================= -->
+    <div v-else-if="mainSection === 'races'" class="space-y-10 animate-fadeIn">
+      
       <section class="space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="text-xl font-bold font-cinzel text-amber-100 flex items-center gap-2">
@@ -360,80 +619,6 @@ const hexenzirkelCoven = [
               </ul>
             </div>
           </div>
-
-          <div class="p-4 rounded-xl bg-tavern-950/70 border border-tavern-border">
-            <span class="text-xs font-semibold uppercase tracking-wider text-purple-300 flex items-center gap-1.5 mb-3">
-              <Crown class="w-3.5 h-3.5 text-purple-400" />
-              Notable Historical & Contemporary Figures
-            </span>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <div 
-                v-for="fig in activeRace.notableFigures" 
-                :key="fig.name"
-                class="px-3 py-1.5 rounded-lg bg-tavern-900 border border-tavern-border/80 text-xs"
-              >
-                <span class="font-bold text-amber-200">{{ fig.name }}</span>
-                <span class="text-slate-400 opacity-80"> — {{ fig.role }}</span>
-              </div>
-            </div>
-
-            <div class="pt-3 border-t border-tavern-border/40 text-xs sm:text-sm text-slate-300 italic">
-              "{{ activeRace.conditionSummary }}"
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Summary Comparison Table -->
-      <section class="space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 class="text-lg font-bold font-cinzel text-amber-100 flex items-center gap-2">
-            <Scroll class="w-4 h-4 text-amber-400" />
-            Lineage Comparison Matrix
-          </h3>
-          <div class="relative w-full sm:w-64">
-            <Search class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-            <input
-              v-model="raceSearch"
-              type="text"
-              placeholder="Search races, gods, elements..."
-              class="w-full bg-tavern-900 border border-tavern-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/50"
-            />
-          </div>
-        </div>
-
-        <div class="overflow-x-auto rounded-xl border border-tavern-border bg-tavern-900/80 shadow-xl">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-tavern-950/80 text-slate-400 uppercase font-cinzel tracking-wider text-[11px] border-b border-tavern-border">
-              <tr>
-                <th class="py-3 px-4">Race</th>
-                <th class="py-3 px-4">Patron God</th>
-                <th class="py-3 px-4">Element</th>
-                <th class="py-3 px-4">Homeland</th>
-                <th class="py-3 px-4">Lifespan</th>
-                <th class="py-3 px-4">Aura Boost</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-tavern-border/50 text-slate-300 font-sans">
-              <tr 
-                v-for="r in filteredRaces" 
-                :key="r.id"
-                @click="selectedRaceId = r.id"
-                class="hover:bg-tavern-850/80 cursor-pointer transition-colors"
-                :class="selectedRaceId === r.id ? 'bg-amber-500/10' : ''"
-              >
-                <td class="py-3 px-4 font-bold text-amber-200 font-cinzel flex items-center gap-2">
-                  <component :is="getRaceIcon(r.id)" class="w-4 h-4 shrink-0 text-amber-400" />
-                  {{ r.name }}
-                </td>
-                <td class="py-3 px-4">{{ r.patronGod.split(',')[0] }}</td>
-                <td class="py-3 px-4 font-medium">{{ r.element }}</td>
-                <td class="py-3 px-4 text-slate-400">{{ r.homeland }}</td>
-                <td class="py-3 px-4 font-mono text-xs">{{ r.lifespan }}</td>
-                <td class="py-3 px-4 font-mono text-xs text-amber-300">{{ r.auraBoost }}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </section>
 
@@ -452,22 +637,18 @@ const hexenzirkelCoven = [
           </h3>
 
           <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-            The Seven Races are taught that they were created solely by the Seven Gods. <strong>This is an intentional theological falsehood.</strong>
-          </p>
-
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-            The bodies, the elemental affinities, and the imperial hierarchies were shaped by the Seven. But the <strong>mortal soul</strong>—the capacity to love, to feel, to hope, and to choose one’s own destiny—was the sacred gift of <strong>Azamina, Goddess of Darkness</strong>.
+            The bodies, elemental affinities, and imperial hierarchies were shaped by the Seven. But the <strong>mortal soul</strong>—the capacity to love, to feel, to hope, and to choose one’s own destiny—was the sacred gift of <strong>Azamina, Goddess of Darkness</strong>.
           </p>
 
           <blockquote class="p-4 rounded-xl bg-tavern-950/80 border-l-4 border-purple-500 text-xs sm:text-sm italic text-amber-100 font-serif leading-relaxed">
-            "When the Seven sealed Azamina in the deep Abyss, they did not merely imprison a rival—they crippled their own creations. Mortals are not defined by their elemental affinities or their patron Gods. They are defined by the spark of Azamina that still burns within them: the power to love, to sacrifice, and to choose."
+            "When the Seven sealed Azamina in the deep Abyss, they did not merely imprison a rival—they crippled their own creations. Mortals are defined by the spark of Azamina that still burns within them: the power to love, to sacrifice, and to choose."
           </blockquote>
         </div>
       </section>
     </div>
 
     <!-- ================================================================= -->
-    <!-- SECTION 2: CONTINENTS & GEOGRAPHY (Interactive Map Explorer)    -->
+    <!-- SECTION 3: CONTINENTS & GEOGRAPHY                                -->
     <!-- ================================================================= -->
     <div v-else-if="mainSection === 'geography'" class="space-y-8 animate-fadeIn">
       
@@ -558,35 +739,12 @@ const hexenzirkelCoven = [
           </div>
         </div>
       </section>
-
-      <!-- Global Metaphysical Geography Features -->
-      <section class="space-y-4 pt-4 border-t border-tavern-border/50">
-        <h4 class="text-lg font-bold font-cinzel text-amber-100 flex items-center gap-2">
-          <Layers class="w-4 h-4 text-purple-400" />
-          Global Metaphysical Phenomena
-        </h4>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div 
-            v-for="g in globalFeatures" 
-            :key="g.title"
-            class="p-4 rounded-xl bg-tavern-900/90 border border-purple-500/20 hover:border-purple-500/40 transition-colors"
-          >
-            <h5 class="text-sm font-bold font-cinzel text-purple-300 mb-1.5">{{ g.title }}</h5>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              {{ g.desc }}
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
 
     <!-- ================================================================= -->
-    <!-- SECTION 3: CHRONICLES & ERAS (Vertical Timeline & Truths)        -->
+    <!-- SECTION 4: CHRONICLES & ERAS                                    -->
     <!-- ================================================================= -->
     <div v-else-if="mainSection === 'chronicles'" class="space-y-10 animate-fadeIn">
-      
-      <!-- Timeline Header -->
       <div class="p-6 rounded-2xl bg-tavern-900/80 border border-tavern-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 class="text-xl font-bold font-cinzel text-amber-100 flex items-center gap-2">
@@ -599,17 +757,14 @@ const hexenzirkelCoven = [
         </div>
       </div>
 
-      <!-- Vertical Timeline Node Sequence -->
       <div class="relative border-l-2 border-tavern-border/70 ml-4 sm:ml-8 space-y-8 pl-6 sm:pl-8">
         <div 
           v-for="era in historicalEras" 
           :key="era.id"
           class="relative group"
         >
-          <!-- Timeline Node Bullet -->
           <div class="absolute -left-[33px] sm:-left-[41px] top-1.5 w-4 h-4 rounded-full bg-tavern-950 border-2 border-amber-500 shadow-md group-hover:scale-125 transition-transform group-hover:bg-amber-400"></div>
 
-          <!-- Era Card -->
           <div class="p-5 sm:p-6 rounded-2xl bg-tavern-900/90 border border-tavern-border hover:border-amber-500/40 transition-all shadow-xl space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-tavern-border/50 pb-3">
               <div>
@@ -627,7 +782,6 @@ const hexenzirkelCoven = [
               {{ era.summary }}
             </p>
 
-            <!-- Key Bullet Events -->
             <div class="p-3.5 rounded-xl bg-tavern-950/70 border border-tavern-border/50 space-y-1.5">
               <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-300 block mb-1">Key Chronological Events:</span>
               <ul class="space-y-1 text-xs text-slate-300">
@@ -647,10 +801,6 @@ const hexenzirkelCoven = [
           <EyeOff class="w-5 h-5 text-red-400" />
           The Six Forgotten Truths of Creation
         </div>
-        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-          Known only to The Unknown, Rei Ardent, Grius, the inner circle of the Hexenzirkel, and the dying memories of the Abyss Order.
-        </p>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div 
             v-for="truth in forbiddenTruths" 
@@ -670,7 +820,7 @@ const hexenzirkelCoven = [
     </div>
 
     <!-- ================================================================= -->
-    <!-- SECTION 4: POWER SYSTEM & LEY LINES                             -->
+    <!-- SECTION 5: POWER SYSTEM & LEY LINES                             -->
     <!-- ================================================================= -->
     <div v-else-if="mainSection === 'power_system'" class="space-y-8 animate-fadeIn">
       <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
@@ -801,7 +951,7 @@ const hexenzirkelCoven = [
     </div>
 
     <!-- ================================================================= -->
-    <!-- SECTION 5: THE ABYSS & THE 7 GODS' PIECES                        -->
+    <!-- SECTION 6: THE ABYSS & THE 7 GODS' PIECES                        -->
     <!-- ================================================================= -->
     <div v-else-if="mainSection === 'abyss_gnosis'" class="space-y-8 animate-fadeIn">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

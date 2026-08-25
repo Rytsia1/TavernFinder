@@ -108,6 +108,8 @@ it("Matches exact canonical Myria schema with power_profile object", () => {
   assert.ok(npc.race, "Missing race");
   assert.ok(npc.homeland, "Missing homeland");
   assert.ok(npc.nation, "Missing nation");
+  assert.ok(npc.government, "Missing government");
+  assert.ok(npc.patron_god, "Missing patron_god");
   assert.ok(npc.occupation, "Missing occupation");
   assert.ok(npc.power_profile, "Missing power_profile");
   assert.ok(npc.power_profile.branch, "Missing power_profile.branch");

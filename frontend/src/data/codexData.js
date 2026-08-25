@@ -2,10 +2,10 @@
  * World of Myria Canonical Codex Dataset
  * Contains detailed lore for:
  * 1. The Seven Elemental Races & Euchronians
- * 2. Mixed-Race Nuances, Prejudices & The Spark of Azamina
+ * 2. The Seven Nations of Myria & Geopolitics
  * 3. Continents, Oceans & Subterranean Geography
  * 4. Chronological Timeline, Eras & The 6 Forgotten Truths
- * 5. Power Systems & Metaphysics
+ * 5. Archon Neutrality & Usurper Geopolitical Conspiracies
  */
 
 // ==========================================
@@ -20,7 +20,7 @@ export const racesData = [
     patronGod: "Valafar, God of Fire",
     element: "Fire",
     auraColor: "Crimson / Gold",
-    homeland: "Varencia Empire",
+    homeland: "Varencia Empire (Emerose City)",
     auraBoost: "Strength +20%",
     lifespan: "60–80 years",
     themeColor: "red",
@@ -123,7 +123,7 @@ export const racesData = [
     patronGod: "Rydos, God of Thunder",
     element: "Thunder",
     auraColor: "Violet / Blue",
-    homeland: "Shinazuma Dynasty (Archipelago)",
+    homeland: "Shinazuma Dynasty (Shimotsugi City)",
     auraBoost: "Reflexes +20%",
     lifespan: "70–100 years",
     themeColor: "purple",
@@ -156,7 +156,7 @@ export const racesData = [
     patronGod: "Zefraath, God of Earth",
     element: "Earth",
     auraColor: "Bronze / Grey",
-    homeland: "Ogusta Empire (Donnavista Mountains)",
+    homeland: "Ogusta Empire (Ored City)",
     auraBoost: "Defense +20%",
     lifespan: "150–250 years",
     themeColor: "amber",
@@ -188,7 +188,7 @@ export const racesData = [
     patronGod: "Hethos, God of Light",
     element: "Light",
     auraColor: "White / Gold",
-    homeland: "None (Global Diaspora & Sanctuaries)",
+    homeland: "None (Global Diaspora & Hidden Sanctuaries)",
     auraBoost: "Speed & Reflexes +10% each",
     lifespan: "500+ years (Declining)",
     themeColor: "yellow",
@@ -221,7 +221,7 @@ export const racesData = [
     patronGod: "Uphine, Goddess of Water",
     element: "Water",
     auraColor: "Blue / Teal",
-    homeland: "Iberia Kingdom (Sapphire Expanse)",
+    homeland: "Iberia Kingdom (The Iberian Reefs)",
     auraBoost: "Endurance & Defense +10% each",
     lifespan: "120–200 years",
     themeColor: "cyan",
@@ -253,7 +253,7 @@ export const racesData = [
     patronGod: "None (Sealed Abyssal Covenant)",
     element: "Abyssal / Void",
     auraColor: "Indigo / Pitch Black",
-    homeland: "Ruins of Cleathari'ah (Beyond the Rift)",
+    homeland: "Ruins of Cleathari'ah (Euchronia Prime)",
     auraBoost: "Immortal Flesh (Eroding Soul)",
     lifespan: "Ageless Immortality (Soul Decay)",
     themeColor: "indigo",
@@ -339,7 +339,219 @@ export const racialPrejudices = [
 ];
 
 // ==========================================
-// 2. GEOGRAPHY & CONTINENTS DATASET
+// 2. THE SEVEN NATIONS & GEOPOLITICS
+// ==========================================
+
+export const nationsData = [
+  {
+    id: "varencia",
+    name: "Varencia Empire",
+    race: "Human",
+    title: "Kingdom of Humanity",
+    patronGod: "Valafar, God of Fire",
+    element: "Fire",
+    capital: "Emerose City",
+    ruler: "Emperor / Empress (Reise Fanatio dynasty)",
+    government: "Imperial Monarchy",
+    military: "Imperial Legions, Knightly Orders, Corps of Battlemages, Aura Imperial Guards (Largest standing army)",
+    themeColor: "red",
+    badgeClass: "bg-red-950/60 text-red-300 border-red-500/40",
+    borderClass: "border-red-500/40 hover:border-red-500/70",
+    cultureSummary: "Ambition, innovation, and urgency. Emerose City is a grand cosmopolitan hub of trade, knightly chivalry, and political intrigue.",
+    tensions: [
+      "Ogusta: Violent border disputes over rich Maglica veins in the Greyfang Hills and Donnavista Mountains.",
+      "Seviel: Historical scars from the Human logging incursions near the Cendres Forest.",
+      "Internal Strife: Succession crisis following King Urdia's assassination."
+    ],
+    storyRole: "Starting hub for Avalon. Rei meets Auclair and Grius at the Emerose royal tournament before King Urdia's assassination sets the continent aflame."
+  },
+  {
+    id: "ogusta",
+    name: "Ogusta Empire",
+    race: "Dwarf",
+    title: "Kingdom of the Dwarves",
+    patronGod: "Zefraath, God of Earth",
+    element: "Earth",
+    capital: "Ored City",
+    ruler: "Council of Thanes (High Thane in wartime)",
+    government: "Council of Thanes",
+    military: "Heavy Armoured Infantry, Legendary Siege Engines, The Stonewardens (Impenetrable defense)",
+    themeColor: "amber",
+    badgeClass: "bg-amber-950/60 text-amber-300 border-amber-500/40",
+    borderClass: "border-amber-500/40 hover:border-amber-500/70",
+    cultureSummary: "Built on stonecraft, metallurgical engineering, and runic sagas. Subterranean halls lit by forge-fires and glowing Maglica veins.",
+    tensions: [
+      "Varencia: Contested mining rights in Greyfang Hills.",
+      "Iberia: Trade competition over marine Maglica crystal fields.",
+      "Eqinada: Deep shaft blasting occasionally damages delicate Druidic root networks."
+    ],
+    storyRole: "Where Noah Centineo joins Avalon. The first Vault of Oblivion is breached near Ored City, and Dellons' theft of the Rook of Creation begins the race."
+  },
+  {
+    id: "seviel",
+    name: "Seviel",
+    race: "Elf",
+    title: "Kingdom of the Elves",
+    patronGod: "Mirinara, Goddess of Wind",
+    element: "Wind",
+    capital: "Cendres Forest (Tree-cities & Moonlit Glades)",
+    ruler: "Sylvan Monarch & The Silver Court",
+    government: "Silver Court & Sylvan Monarch",
+    military: "Aura Bow Snipers, Sylvan Rangers, Windsong Mages, Awakened Fey Ents",
+    themeColor: "emerald",
+    badgeClass: "bg-emerald-950/60 text-emerald-300 border-emerald-500/40",
+    borderClass: "border-emerald-500/40 hover:border-emerald-500/70",
+    cultureSummary: "Ancient, aristocratic, and isolationist. The Silver Court weighs decisions across centuries, valuing celestial harmony, music, and poetry.",
+    tensions: [
+      "Varencia: Bitter memory of the Silverwood Incident (logging bloodshed).",
+      "Eqinada: Overlapping claims to ancient ancestral timberlands.",
+      "Court Isolationism: Hardline noble factions refusing contact with mortal realms."
+    ],
+    storyRole: "The site of Amelia Kusalina's climactic battle at the ruined sylvan amphitheater where her lover fell centuries ago."
+  },
+  {
+    id: "shinazuma",
+    name: "Shinazuma Dynasty",
+    race: "Half-Animal (Beastman)",
+    title: "Kingdom of the Beastmen",
+    patronGod: "Rydos, God of Thunder",
+    element: "Thunder",
+    capital: "Shimotsugi City",
+    ruler: "The Shogun & Divine Empress",
+    government: "Shogunate + Divine Empress",
+    military: "Samurai Blade-Masters, Covert Ninja Operatives, Thunder Warrior-Monks, Archipelago Fleet",
+    themeColor: "purple",
+    badgeClass: "bg-purple-950/60 text-purple-300 border-purple-500/40",
+    borderClass: "border-purple-500/40 hover:border-purple-500/70",
+    cultureSummary: "Honor, bushido, thunder reverence, and clan solidarity. Pagoda fortresses surrounded by tranquil rock gardens and stormy sea shoals.",
+    tensions: [
+      "Iberia: The Coral Straits Crisis—disputed fishing rights and naval boundaries.",
+      "Clan Blood Rivalries: Fierce competition between animal houses exploited by outsiders.",
+      "Varencia: Trade tariffs and cultural friction."
+    ],
+    storyRole: "Where Shizuku Kageyuki joins Avalon. The Kageyuki clan's heritage, Ilya's history as Kaori, and the succession of the Blade of Judgement unfold here."
+  },
+  {
+    id: "iberia",
+    name: "Iberia Kingdom",
+    race: "Merfolk",
+    title: "Kingdom of the Merfolk",
+    patronGod: "Uphine, Goddess of Water",
+    element: "Water",
+    capital: "The Iberian Reefs",
+    ruler: "Coral Throne Monarch & Tide Sages",
+    government: "The Coral Throne (Monarchy advised by Tide Sages)",
+    military: "Seahorse & Shark Cavalry, Tidespeakers, Submerged Depth Hunters, Oceanic Pressure Shields",
+    themeColor: "cyan",
+    badgeClass: "bg-cyan-950/60 text-cyan-300 border-cyan-500/40",
+    borderClass: "border-cyan-500/40 hover:border-cyan-500/70",
+    cultureSummary: "Amphibious architecture built on stilts and iridescent coral reefs. Tide Sages read the echoes of ancient history carried by ocean currents.",
+    tensions: [
+      "Shinazuma: Maritime boundary clashes in the Coral Straits.",
+      "Ogusta: Competition over underwater crystal mining.",
+      "Abyssal Pollution: Necrotic runoff from Cleathari'ah poisoning the Coral Graveyard."
+    ],
+    storyRole: "Where Alissa Seinbenz joins Avalon. The Sunken Vault of Oblivion is opened, yielding the Bishop of Illusion before Amelia ambushes the party."
+  },
+  {
+    id: "eqinada",
+    name: "Eqinada",
+    race: "Druid (Half-Plant)",
+    title: "Kingdom of the Druids",
+    patronGod: "Muna, Goddess of Plant",
+    element: "Plant",
+    capital: "None (Sacred Groves & Assembly of the Great Oak)",
+    ruler: "Circle of Elders (Consensus-based)",
+    government: "Circle of Elders",
+    military: "Living Forest & Treants, Swarms of Stinging Insects, Green Fey, Shapeshifter Wardens",
+    themeColor: "green",
+    badgeClass: "bg-green-950/60 text-green-300 border-green-500/40",
+    borderClass: "border-green-500/40 hover:border-green-500/70",
+    cultureSummary: "Communal, egalitarian, and deeply spiritual. No stone cities exist; life thrives in communion with planetary ley lines and sacred roots.",
+    tensions: [
+      "Varencia: Logging expeditions threatening sacred groves.",
+      "Seviel: Overlapping ancestral claims.",
+      "Ogusta: Subterranean mining detonations disrupting root leylines."
+    ],
+    storyRole: "Where Vicktor Huthront joins Avalon. The Sunken Fens Vault is discovered, and Revali Archibald's tragic trial at Dragonspine takes place."
+  },
+  {
+    id: "diaspora",
+    name: "Liichtian Diaspora",
+    race: "Liichtian (Angel)",
+    title: "The Dying People of Light",
+    patronGod: "Hethos, God of Light",
+    element: "Light",
+    capital: "No homeland (Scattered across Varencia & remote sanctuaries)",
+    ruler: "None (Scattered orders & wandering paladins)",
+    government: "None (Scattered communities)",
+    military: "Sun Paladins, Photonic Healers, Ascendant Saint Guardians",
+    themeColor: "yellow",
+    badgeClass: "bg-yellow-950/60 text-yellow-200 border-yellow-400/40",
+    borderClass: "border-yellow-400/40 hover:border-yellow-400/70",
+    cultureSummary: "A dwindling angelic diaspora preserving fragments of ancient hymns, healing arts, and melancholic memories of their lost celestial homeland.",
+    tensions: [
+      "Hunted by fanatical occultists for their photonic blood.",
+      "Near-extinction after the catastrophic Celestian Purge.",
+      "Deep ancestral guilt from their weaponized role in the War in Heaven."
+    ],
+    storyRole: "Represented by Fiore (Alome), Slaine Arlondorn, and Sheliri (before her fall). Their tragic heritage is central to the mystery of the Divine Order."
+  },
+  {
+    id: "euchronia_remnant",
+    name: "Ruins of Cleathari'ah",
+    race: "Euchronian (Cursed)",
+    title: "The Cursed Imperial Remnant",
+    patronGod: "None (Sealed Abyssal Covenant)",
+    element: "Abyssal / Void",
+    capital: "Euchronia Prime (Shattered Subterranean Halls)",
+    ruler: "The Fallen Crown (Reinhart von Exillion)",
+    government: "The Fallen Crown Remnant",
+    military: "Corrupted Magitek Automata, Undying Royal Blades, Abyssal Dreadnoughts",
+    themeColor: "indigo",
+    badgeClass: "bg-indigo-950/80 text-indigo-200 border-indigo-500/50",
+    borderClass: "border-indigo-500/50 hover:border-indigo-500/80",
+    cultureSummary: "The immortal royal remnant of a once-unified Magitek empire that challenged heaven, now enduring endless soul erosion and divine damnation.",
+    tensions: [
+      "Absolute exile by the Church of the Seven Gods.",
+      "Eternal war against Celestia to free Azamina from the Abyss."
+    ],
+    storyRole: "The endgame stage where Avalon descends into the Thirteen Towers of Costlevania to face Dellons, Revali, and The Unknown."
+  }
+];
+
+export const archonNeutrality = {
+  title: "The Neutrality of the Archons",
+  subtitle: "Chosen Warriors of the Seven Holy Weapons",
+  oath: "The Archons swear a sacred divine oath forbidding them from joining mortal wars. They exist solely to protect all people from existential threats—Abyssal incursions, rogue dragons, and planetary cataclysms.",
+  role: "When nations march to war, Archons act as neutral mediators. If diplomacy fails, they stand aside. Rulers who attempt to coerce Archons into battle invite divine retribution, for when Archons fight Archons, innocent worlds burn."
+};
+
+export const usurperShadowData = [
+  {
+    name: "Amelia Kusalina",
+    alias: "The Fair Lady / Mind Queen",
+    manipulation: "Mind-controlled royal ministers and court nobles in Varencia and Seviel to vote for unnecessary trade embargoes and military mobilizations."
+  },
+  {
+    name: "Revali Archibald",
+    alias: "Ghost of the Leaf / Eternal Hunter",
+    manipulation: "Sabotaged Dwarven mining shafts and Human logging camps, planting forged insignias to make each empire blame the other."
+  },
+  {
+    name: "Ilya Alberich",
+    alias: "The Nightingale / Whispering Blade",
+    manipulation: "Fanned clan rivalries in the Shinazuma Dynasty from the shadows, ensuring the Beastman shogunate remained divided and distracted."
+  },
+  {
+    name: "The Unknown",
+    alias: "The Grand Puppetmaster",
+    manipulation: "Orchestrated targeted Abyss Order strikes against coastal towns to force nations to mobilize armies toward dormant Vaults of Oblivion."
+  }
+];
+
+// ==========================================
+// 3. GEOGRAPHY & CONTINENTS DATASET
 // ==========================================
 
 export const continentsData = [
@@ -445,7 +657,7 @@ export const globalFeatures = [
 ];
 
 // ==========================================
-// 3. CHRONOLOGICAL TIMELINE & ERAS DATASET
+// 4. CHRONOLOGICAL TIMELINE & ERAS DATASET
 // ==========================================
 
 export const historicalEras = [
@@ -561,7 +773,7 @@ export const historicalEras = [
 ];
 
 // ==========================================
-// 4. THE 6 FORBIDDEN TRUTHS
+// 5. THE 6 FORBIDDEN TRUTHS
 // ==========================================
 
 export const forbiddenTruths = [

@@ -1,8 +1,8 @@
 /**
- * Canonical Myria Procedural Generator (Client-Side Fallback Engine)
+ * Canonical Myria Procedural Generator
  * Generates characters strictly adhering to Myria's metaphysics, racial attribute boosts,
- * elemental aura affinities, nation-specific cultural naming pools, and D&D-style roleplay pillars
- * (Core Ideal, Deep Bond, Fatal Flaw, Dark Secret, Internal Fear, Pocket Trinket).
+ * elemental aura affinities, nation-specific cultural naming pools, geopolitical allegiances,
+ * and D&D-style roleplay pillars (Core Ideal, Deep Bond, Fatal Flaw, Dark Secret, Internal Fear, Pocket Trinket).
  */
 
 import { PRNG } from './prng.js';
@@ -27,7 +27,7 @@ import {
 } from './data/index.js';
 
 /**
- * Generates an authentic Myria NPC deterministically with cultural names, roleplay pillars, and lore hooks.
+ * Generates an authentic Myria NPC deterministically with cultural names, roleplay pillars, and geopolitical origins.
  * 
  * @param {string|number} [seed] - Optional seed for deterministic generation
  * @param {Object} [options] - Options (e.g., gender, race)
@@ -169,6 +169,8 @@ export function generateMyriaNpc(seed, options = {}) {
     `### ⚡ **Myria Lineage & Metaphysics**`,
     `- **Race:** ${race.name} (Aura: *${race.auraColor}* | Element: *${race.element}*)`,
     `- **Homeland:** ${nation.name} *(Capital: ${nation.capital})*`,
+    `- **Government:** ${nation.government}`,
+    `- **Patron Deity:** ${nation.patronGod}`,
     `- **Racial Attribute Boost:** ${race.racialBoost}`,
     `- **Gender:** ${selectedGender}`,
     `- **Power Branch:** ${selectedBranchObj.name}`,
@@ -197,6 +199,8 @@ export function generateMyriaNpc(seed, options = {}) {
     homeland: nation.name,
     nation: nation.name,
     capital: nation.capital,
+    government: nation.government,
+    patron_god: nation.patronGod,
     occupation: occupation.title,
     personality: personality.name,
     power_profile: powerProfile,
