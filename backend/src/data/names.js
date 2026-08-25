@@ -1,92 +1,141 @@
 /**
  * Grounded Historical Names & Surnames Dataset
- * Eliminated generic high-fantasy tropes in favor of authentic European and East Asian historical traditions.
+ * Structured by Cultural Tradition and Gender (Male / Female).
  */
 
 // ==========================================
-// 1. FIRST NAMES BY CULTURAL TRADITION
+// 1. MALE FIRST NAMES BY CULTURAL TRADITION
 // ==========================================
 
-export const angloNormanNames = [
-  "Godric", "Barnaby", "Walter", "Edith", "Aldous",
-  "Bartholomew", "Dunstan", "Margaret", "Beatrice", "Roger",
-  "Osric", "Constance", "Jocelyn", "Wystan", "Geoffrey",
-  "Wulfric", "Eadmund", "Cuthbert", "Morcar", "Sybil",
-  "Elowen", "Cecily", "Rowena", "Athelstan", "Leofric"
+export const maleAngloNorman = [
+  "Godric", "Barnaby", "Walter", "Aldous", "Bartholomew",
+  "Dunstan", "Roger", "Osric", "Wystan", "Geoffrey",
+  "Wulfric", "Eadmund", "Cuthbert", "Morcar", "Athelstan", "Leofric"
 ];
 
-export const frenchOccitanNames = [
-  "Thibault", "Marcel", "Guy", "Adrienne", "Renaud",
-  "Bertrand", "Etienne", "Guillaume", "Ysabeau", "Clotilde",
-  "Gaston", "Jehanne", "Pascal", "Matthieu", "Amaury",
-  "Balian", "Yvain", "Melisande", "Blanche", "Vivien",
-  "Florian", "Grosjean", "Honoré", "Leonce", "Valerand"
+export const maleFrenchOccitan = [
+  "Thibault", "Marcel", "Guy", "Renaud", "Bertrand",
+  "Etienne", "Guillaume", "Gaston", "Pascal", "Matthieu",
+  "Amaury", "Balian", "Yvain", "Vivien", "Florian",
+  "Grosjean", "Honoré", "Leonce", "Valerand"
 ];
 
-export const germanicNames = [
-  "Albrecht", "Dieter", "Dietrich", "Greta", "Wolfram",
-  "Konrad", "Heinrich", "Brunhild", "Walther", "Agnes",
-  "Reinhard", "Mathilde", "Oskar", "Hedwig", "Siegfried",
-  "Fastred", "Hildegard", "Ulrich", "Gerhart", "Liesel",
-  "Gottfried", "Erwin", "Otto", "Klaus", "Wilhelm"
+export const maleGermanic = [
+  "Albrecht", "Dieter", "Dietrich", "Wolfram", "Konrad",
+  "Heinrich", "Walther", "Reinhard", "Oskar", "Siegfried",
+  "Fastred", "Ulrich", "Gerhart", "Gottfried", "Erwin",
+  "Otto", "Klaus", "Wilhelm"
 ];
 
-export const romanLatinNames = [
-  "Cassian", "Lucian", "Marius", "Valeria", "Severus",
-  "Claudia", "Julian", "Tiberius", "Faustus", "Aurelia",
-  "Antonius", "Drusus", "Octavia", "Titus", "Quintus",
-  "Flavia", "Cassius", "Aurelius", "Valerius", "Camilla",
-  "Lucretia", "Silvanus", "Cornelius", "Maximus", "Vesta"
+export const maleRomanLatin = [
+  "Cassian", "Lucian", "Marius", "Severus", "Julian",
+  "Tiberius", "Faustus", "Antonius", "Drusus", "Titus",
+  "Quintus", "Cassius", "Aurelius", "Valerius", "Silvanus",
+  "Cornelius", "Maximus"
 ];
 
-export const byzantineGreekNames = [
-  "Niketas", "Theron", "Damaso", "Helena", "Leontios",
-  "Georgios", "Eudokia", "Stephanos", "Theodora", "Ioannes",
-  "Alexios", "Konstantinos", "Kallisto", "Basileios", "Demetrios",
-  "Cassander", "Irena", "Thaddeus", "Kallista", "Sophronia",
-  "Nikos", "Evander", "Phokas", "Zoe", "Cosmas"
+export const maleByzantineGreek = [
+  "Niketas", "Theron", "Damaso", "Leontios", "Georgios",
+  "Stephanos", "Ioannes", "Alexios", "Konstantinos", "Basileios",
+  "Demetrios", "Cassander", "Thaddeus", "Nikos", "Evander",
+  "Phokas", "Cosmas"
 ];
 
-export const classicalChineseNames = [
-  "Wenchen", "Yan", "Feng", "Xue", "Mingze",
-  "Zhiyuan", "Lanying", "Bojing", "Huiling", "Junjie",
-  "Guanyu", "Meifeng", "Chenglei", "Xiuying", "Zhurong",
-  "Baoyu", "Minghua", "Ruoguang", "Yuan", "Changge",
-  "Shen", "Lingxin", "Haoran", "Yuwei", "Zixuan"
+export const maleClassicalChinese = [
+  "Wenchen", "Feng", "Mingze", "Zhiyuan", "Bojing",
+  "Junjie", "Guanyu", "Chenglei", "Baoyu", "Minghua",
+  "Ruoguang", "Yuan", "Changge", "Shen", "Haoran"
 ];
 
-export const preModernJapaneseNames = [
-  "Genzo", "Ryoma", "Kenshin", "Jiro", "Kaede",
-  "Ren", "Yasuke", "Chiyo", "Tomoe", "Hidetora",
-  "Kazumasa", "Shinsaku", "Oichi", "Yukimura", "Hanzo",
-  "Musashi", "Chiyome", "Kotaro", "Sakon", "Katsuro",
+export const malePreModernJapanese = [
+  "Genzo", "Ryoma", "Kenshin", "Jiro", "Ren",
+  "Yasuke", "Hidetora", "Kazumasa", "Shinsaku", "Yukimura",
+  "Hanzo", "Musashi", "Kotaro", "Sakon", "Katsuro",
   "Tatsuo", "Keiji", "Masamune", "Nobunaga", "Goemon"
 ];
 
-export const joseonKoreanNames = [
-  "Min-hyuk", "Do-jin", "Ha-neul", "Jin-woo", "Seon-woo",
-  "Yeong-ho", "Dong-yul", "Ji-hye", "Eun-ji", "Tae-seok",
-  "Hyun-woo", "Sang-won", "So-yeon", "Kyung-soo", "Yeong-jin",
-  "Seon-deok", "Gwang-ha", "Chae-won", "Hae-in", "Byeong-ho",
-  "Su-bin", "Myeong-seok", "Woo-jin", "Nari", "Kyung-ho"
-];
-
-/**
- * Consolidated First Names Pool (180+ Authentic Names)
- */
-export const firstNames = [
-  ...angloNormanNames,
-  ...frenchOccitanNames,
-  ...germanicNames,
-  ...romanLatinNames,
-  ...byzantineGreekNames,
-  ...classicalChineseNames,
-  ...preModernJapaneseNames,
-  ...joseonKoreanNames
+export const maleJoseonKorean = [
+  "Min-hyuk", "Do-jin", "Jin-woo", "Seon-woo", "Yeong-ho",
+  "Dong-yul", "Tae-seok", "Hyun-woo", "Sang-won", "Kyung-soo",
+  "Yeong-jin", "Gwang-ha", "Byeong-ho", "Myeong-seok", "Woo-jin", "Kyung-ho"
 ];
 
 // ==========================================
-// 2. SURNAMES BY CULTURAL TRADITION
+// 2. FEMALE FIRST NAMES BY CULTURAL TRADITION
+// ==========================================
+
+export const femaleAngloNorman = [
+  "Edith", "Margaret", "Beatrice", "Constance", "Jocelyn",
+  "Sybil", "Elowen", "Cecily", "Rowena"
+];
+
+export const femaleFrenchOccitan = [
+  "Adrienne", "Ysabeau", "Clotilde", "Jehanne", "Melisande",
+  "Blanche"
+];
+
+export const femaleGermanic = [
+  "Greta", "Brunhild", "Agnes", "Mathilde", "Hedwig",
+  "Hildegard", "Liesel"
+];
+
+export const femaleRomanLatin = [
+  "Valeria", "Claudia", "Aurelia", "Octavia", "Flavia",
+  "Camilla", "Lucretia", "Vesta"
+];
+
+export const femaleByzantineGreek = [
+  "Helena", "Eudokia", "Theodora", "Kallisto", "Irena",
+  "Kallista", "Sophronia", "Zoe"
+];
+
+export const femaleClassicalChinese = [
+  "Yan", "Xue", "Lanying", "Huiling", "Meifeng",
+  "Xiuying", "Zhurong", "Lingxin", "Yuwei", "Zixuan"
+];
+
+export const femalePreModernJapanese = [
+  "Kaede", "Chiyo", "Tomoe", "Oichi", "Chiyome"
+];
+
+export const femaleJoseonKorean = [
+  "Ha-neul", "Ji-hye", "Eun-ji", "So-yeon", "Seon-deok",
+  "Chae-won", "Hae-in", "Su-bin", "Nari"
+];
+
+// ==========================================
+// 3. CONSOLIDATED FIRST NAMES
+// ==========================================
+
+export const maleNames = [
+  ...maleAngloNorman,
+  ...maleFrenchOccitan,
+  ...maleGermanic,
+  ...maleRomanLatin,
+  ...maleByzantineGreek,
+  ...maleClassicalChinese,
+  ...malePreModernJapanese,
+  ...maleJoseonKorean
+];
+
+export const femaleNames = [
+  ...femaleAngloNorman,
+  ...femaleFrenchOccitan,
+  ...femaleGermanic,
+  ...femaleRomanLatin,
+  ...femaleByzantineGreek,
+  ...femaleClassicalChinese,
+  ...femalePreModernJapanese,
+  ...femaleJoseonKorean
+];
+
+export const firstNames = [
+  ...maleNames,
+  ...femaleNames
+];
+
+// ==========================================
+// 4. SURNAMES BY CULTURAL TRADITION
 // ==========================================
 
 export const europeanSurnames = [
@@ -122,9 +171,6 @@ export const koreanSurnames = [
   "Hwang", "Son", "Heo", "Yang", "Song"
 ];
 
-/**
- * Consolidated Surnames Pool (100+ Grounded Surnames & Epithets)
- */
 export const surnames = [
   ...europeanSurnames,
   ...chineseSurnames,
@@ -132,7 +178,4 @@ export const surnames = [
   ...koreanSurnames
 ];
 
-/**
- * Alias for compatibility
- */
 export const lastNames = surnames;

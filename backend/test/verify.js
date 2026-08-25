@@ -3,14 +3,16 @@
  * Tests:
  * 1. PRNG determinism with repeated seeds (both strings and numbers)
  * 2. Statistical variance across multiple random seeds
- * 3. Exact schema compliance
- * 4. Integration testing with Express API endpoints
+ * 3. Exact schema compliance (including gender, origins, D&D pillars, trinkets, markdown)
+ * 4. Gender filtering (male / female / any)
+ * 5. Integration testing with Express API endpoints
  */
 
 import http from 'node:http';
 import assert from 'node:assert/strict';
 import { PRNG, hashSeed } from '../src/generators/prng.js';
 import { generateNpc } from '../src/generators/npcGenerator.js';
+import { maleNames, femaleNames } from '../src/data/index.js';
 import app from '../src/index.js';
 
 let passed = 0;
@@ -73,7 +75,7 @@ it("PRNG with numeric seed generates deterministic outputs", () => {
   }
 });
 
-// 2. NPC Procedural Generator Determinism & Schema
+// 2. NPC Procedural Generator Determinism, Schema & Gender Tests
 console.log("\n🧪 2. NPC Procedural Generator Determinism & Schema Tests");
 it("Generates identical NPC attributes for 50 repeated runs with same seed", () => {
   const testSeed = "elaris-apothecary-99";
@@ -88,17 +90,34 @@ it("Generates identical NPC attributes for 50 repeated runs with same seed", () 
 it("Matches exact output schema with non-empty string fields", () => {
   const npc = generateNpc("test_schema");
   const requiredKeys = [
-    "seed", "name", "title", "origin", "personality", "ideal", "bond", "flaw", "trinket", "fear", "secret", "dialogue", "markdown"
+    "seed", "name", "gender", "title", "origin", "personality", "ideal", "bond", "flaw", "trinket", "fear", "secret", "dialogue", "markdown"
   ];
-
   
   for (const key of requiredKeys) {
     assert.ok(key in npc, `Missing key: ${key}`);
     assert.equal(typeof npc[key], "string", `Key ${key} must be a string`);
     assert.ok(npc[key].trim().length > 0, `Key ${key} cannot be empty`);
   }
+  assert.ok(["Male", "Female"].includes(npc.gender));
 });
 
+it("Generates male NPC when gender='male' is requested", () => {
+  for (let i = 0; i < 20; i++) {
+    const npc = generateNpc(null, { gender: "male" });
+    assert.equal(npc.gender, "Male");
+    const firstName = npc.name.split(" ")[0];
+    assert.ok(maleNames.includes(firstName), `Expected male name, got ${firstName}`);
+  }
+});
+
+it("Generates female NPC when gender='female' is requested", () => {
+  for (let i = 0; i < 20; i++) {
+    const npc = generateNpc(null, { gender: "female" });
+    assert.equal(npc.gender, "Female");
+    const firstName = npc.name.split(" ")[0];
+    assert.ok(femaleNames.includes(firstName), `Expected female name, got ${firstName}`);
+  }
+});
 
 it("Generates high variance across 100 random seeds", () => {
   const names = new Set();
@@ -140,11 +159,25 @@ server.listen(0, async () => {
       const npc = await res.json();
       assert.ok(npc.seed);
       assert.ok(npc.name);
+      assert.ok(npc.gender);
       assert.ok(npc.title);
+      assert.ok(npc.origin);
       assert.ok(npc.personality);
+      assert.ok(npc.ideal);
+      assert.ok(npc.bond);
+      assert.ok(npc.flaw);
+      assert.ok(npc.trinket);
       assert.ok(npc.fear);
       assert.ok(npc.secret);
       assert.ok(npc.dialogue);
+      assert.ok(npc.markdown);
+    });
+
+    await itAsync("GET /api/npc/random?gender=female returns a female NPC", async () => {
+      const res = await fetch(`${baseUrl}/api/npc/random?gender=female`);
+      assert.equal(res.status, 200);
+      const npc = await res.json();
+      assert.equal(npc.gender, "Female");
     });
 
     await itAsync("GET /api/npc/random?seed=xyz returns deterministic output", async () => {
@@ -167,11 +200,11 @@ server.listen(0, async () => {
 
     // Display sample generated NPCs
     console.log("📜 Sample Generated NPCs from Seeded Engine:\n");
-    console.log("1. Seed 'elaris_sample':");
-    console.log(JSON.stringify(generateNpc("elaris_sample"), null, 2));
-    console.log("\n2. Seed 'ironwood_blacksmith':");
-    console.log(JSON.stringify(generateNpc("ironwood_blacksmith"), null, 2));
-    console.log("\n3. Random Seed:");
+    console.log("1. Female Seed 'elaris_sample':");
+    console.log(JSON.stringify(generateNpc("elaris_sample", { gender: "female" }), null, 2));
+    console.log("\n2. Male Seed 'ironwood_blacksmith':");
+    console.log(JSON.stringify(generateNpc("ironwood_blacksmith", { gender: "male" }), null, 2));
+    console.log("\n3. Random Deterministic Seed (Auto Gender):");
     console.log(JSON.stringify(generateNpc(), null, 2));
     console.log("");
   } finally {

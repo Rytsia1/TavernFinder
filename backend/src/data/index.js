@@ -2,7 +2,7 @@
  * Consolidated Fantasy Data Exports
  */
 
-export { firstNames, surnames, lastNames } from './names.js';
+export { maleNames, femaleNames, firstNames, surnames, lastNames } from './names.js';
 export { occupations } from './occupations.js';
 export { origins } from './origins.js';
 export { personalities } from './personalities.js';

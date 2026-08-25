@@ -5,15 +5,15 @@
 import { generateNpc } from '../generators/npcGenerator.js';
 
 /**
- * Controller to handle generating a random or deterministic NPC.
+ * Controller to handle generating a random or deterministic NPC with optional gender filter.
  * @param {import('express').Request} req 
  * @param {import('express').Response} res 
  * @param {import('express').NextFunction} next 
  */
 export function getNpc(req, res, next) {
   try {
-    const { seed } = req.query;
-    const npc = generateNpc(seed);
+    const { seed, gender } = req.query;
+    const npc = generateNpc(seed, { gender });
     return res.status(200).json(npc);
   } catch (error) {
     next(error);

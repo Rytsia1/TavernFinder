@@ -1,11 +1,14 @@
 /**
  * NPC Procedural Generation Logic
  * Implements weighted, archetype-correlated fantasy character generation with deterministic PRNG,
- * Origins, D&D 5e-style roleplay pillars (Ideals, Bonds, Flaws), pocket trinkets, and Obsidian/Notion-ready Markdown export.
+ * Gender selection, Origins, D&D 5e-style roleplay pillars (Ideals, Bonds, Flaws), pocket trinkets,
+ * and Obsidian/Notion-ready Markdown export.
  */
 
 import { PRNG } from './prng.js';
 import {
+  maleNames,
+  femaleNames,
   firstNames,
   surnames,
   occupations,
@@ -20,9 +23,15 @@ import {
 } from '../data/index.js';
 
 /**
+ * @typedef {Object} NpcOptions
+ * @property {string} [gender] - Optional gender filter ('male' | 'female' | 'any')
+ */
+
+/**
  * @typedef {Object} NpcOutput
  * @property {string|number} seed - The raw seed used to generate the character
  * @property {string} name - Character's full name
+ * @property {string} gender - Character's gender ('Male' | 'Female')
  * @property {string} title - The occupation / archetype title
  * @property {string} origin - Character's formative background / origin
  * @property {string} personality - Dominant personality trait
@@ -39,51 +48,79 @@ import {
 /**
  * Generates an atmospheric fantasy NPC deterministically using a seeded PRNG.
  * 
- * @param {string|number} [seed] - Optional seed for deterministic generation
+ * @param {string|number|Object} [seedOrOptions] - Optional seed string/number or options object
+ * @param {NpcOptions} [options] - Optional generation options (e.g., gender)
  * @returns {NpcOutput}
  */
-export function generateNpc(seed) {
+export function generateNpc(seedOrOptions, options = {}) {
+  let seed;
+  let opts = { ...options };
+
+  if (typeof seedOrOptions === 'object' && seedOrOptions !== null) {
+    seed = seedOrOptions.seed;
+    opts = { ...opts, ...seedOrOptions };
+  } else {
+    seed = seedOrOptions;
+  }
+
   const prng = new PRNG(seed);
 
-  // 1. Generate Full Name
-  const firstName = prng.pick(firstNames);
+  // 1. Determine Gender
+  let selectedGender;
+  let namePool;
+
+  const normalizedGender = String(opts.gender || '').toLowerCase().trim();
+  if (normalizedGender === 'male') {
+    selectedGender = 'Male';
+    namePool = maleNames;
+  } else if (normalizedGender === 'female') {
+    selectedGender = 'Female';
+    namePool = femaleNames;
+  } else {
+    // Deterministically pick gender if unspecified
+    selectedGender = prng.pick(['Male', 'Female']);
+    namePool = selectedGender === 'Male' ? maleNames : femaleNames;
+  }
+
+  // 2. Generate Full Name
+  const firstName = prng.pick(namePool) || prng.pick(firstNames);
   const surname = prng.pick(surnames);
   const fullName = `${firstName} ${surname}`;
 
-  // 2. Select Occupation Archetype based on base weights
+  // 3. Select Occupation Archetype based on base weights
   const occupation = prng.weightedPick(occupations, (occ) => occ.baseWeight ?? 1);
 
-  // 3. Select Formative Origin / Background
+  // 4. Select Formative Origin / Background
   const origin = prng.pick(origins);
 
-  // 4. Select Dominant Personality based on occupation's trait affinity weights
+  // 5. Select Dominant Personality based on occupation's trait affinity weights
   const personality = prng.weightedPick(personalities, (pers) => {
     return occupation.traitWeights?.[pers.id] ?? 1;
   });
 
-  // 5. Select D&D 5e Roleplay Pillars (Ideals, Bonds, Flaws) & Pocket Trinket
+  // 6. Select D&D 5e Roleplay Pillars (Ideals, Bonds, Flaws) & Pocket Trinket
   const ideal = prng.pick(ideals);
   const bond = prng.pick(bonds);
   const flaw = prng.pick(flaws);
   const trinket = prng.pick(trinkets);
 
-  // 6. Select Dynamic Fear (correlated with archetype tag, 5x weight for matching tags)
+  // 7. Select Dynamic Fear (correlated with archetype tag, 5x weight for matching tags)
   const fear = prng.weightedPick(fears, (item) => {
     return item.tags?.includes(occupation.tag) ? 5 : 1;
   });
 
-  // 7. Select Dynamic Secret (correlated with archetype tag, 5x weight for matching tags)
+  // 8. Select Dynamic Secret (correlated with archetype tag, 5x weight for matching tags)
   const secret = prng.weightedPick(secrets, (item) => {
     return item.tags?.includes(occupation.tag) ? 5 : 1;
   });
 
-  // 8. Select Contextual Dialogue matching the dominant personality trait
+  // 9. Select Contextual Dialogue matching the dominant personality trait
   const dialoguePool = personality.dialogue && personality.dialogue.length > 0
     ? personality.dialogue
     : ["..."];
   const dialogueTemplate = prng.pick(dialoguePool);
 
-  // 9. Format clean dialogue string with rich contextual interpolation
+  // 10. Format clean dialogue string with rich contextual interpolation
   const dialogue = dialogueTemplate
     .replace(/\{name\}/g, fullName)
     .replace(/\{title\}/g, occupation.title)
@@ -91,12 +128,13 @@ export function generateNpc(seed) {
     .replace(/\{secret\}/g, secret.text.toLowerCase())
     .replace(/\{personality\}/g, personality.name.toLowerCase());
 
-  // 10. Assemble Obsidian / Notion-Ready Markdown Block
+  // 11. Assemble Obsidian / Notion-Ready Markdown Block
   const markdown = [
     `# 🍺 ${fullName} — ${occupation.title}`,
     `> *"${dialogue}"*`,
     ``,
     `### 📜 Background & Personality`,
+    `- **Gender:** ${selectedGender}`,
     `- **Origin:** ${origin}`,
     `- **Personality:** ${personality.name}`,
     `- **Core Ideal:** ${ideal}`,
@@ -112,6 +150,7 @@ export function generateNpc(seed) {
   return {
     seed: prng.rawSeed,
     name: fullName,
+    gender: selectedGender,
     title: occupation.title,
     origin: origin,
     personality: personality.name,
