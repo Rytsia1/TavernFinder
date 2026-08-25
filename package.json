@@ -1,13 +1,14 @@
 {
   "name": "tavern-finder-workspace",
   "version": "1.0.0",
+  "type": "module",
   "description": "Tavern Finder — Lightweight atmospheric fantasy NPC generator (Vue 3 + Node.js Express)",
   "scripts": {
-    "dev:backend": "cd backend && npm run dev",
+    "dev": "node dev.js",
+    "dev:backend": "node backend/src/index.js",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev": "node -e \"console.log('To run both: in terminal 1: cd backend && npm run dev | in terminal 2: cd frontend && npm run dev')\"",
-    "test:backend": "cd backend && npm test",
-    "build:frontend": "cd frontend && npm run build"
+    "test": "cd backend && npm test",
+    "build": "cd frontend && npm run build"
   },
   "keywords": [
     "npc-generator",

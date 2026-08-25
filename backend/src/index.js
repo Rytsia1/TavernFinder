@@ -55,11 +55,19 @@ import { fileURLToPath } from 'node:url';
 const isDirectExecution = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 
 if (isDirectExecution) {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🍺 Tavern Finder Procedural Generator API running on port ${PORT}`);
-    console.log(`👉 Health Check: http://localhost:${PORT}/api/health`);
-    console.log(`👉 Random NPC:   http://localhost:${PORT}/api/npc/random`);
-    console.log(`👉 Seeded NPC:   http://localhost:${PORT}/api/npc/random?seed=elaris42`);
+    console.log(`👉 Health Check: http://127.0.0.1:${PORT}/api/health`);
+    console.log(`👉 Random NPC:   http://127.0.0.1:${PORT}/api/npc/random`);
+    console.log(`👉 Seeded NPC:   http://127.0.0.1:${PORT}/api/npc/random?seed=elaris42`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.warn(`⚠️ Port ${PORT} is already in use by an active process. Backend API is ready on port ${PORT}.`);
+    } else {
+      console.error("Server error:", err);
+    }
   });
 }
 
