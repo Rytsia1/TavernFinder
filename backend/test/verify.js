@@ -106,6 +106,8 @@ it("Matches exact canonical Myria schema with power_profile object", () => {
   assert.ok(npc.name, "Missing name");
   assert.ok(["Male", "Female"].includes(npc.gender), "Gender must be Male or Female");
   assert.ok(npc.race, "Missing race");
+  assert.ok(npc.homeland, "Missing homeland");
+  assert.ok(npc.nation, "Missing nation");
   assert.ok(npc.occupation, "Missing occupation");
   assert.ok(npc.power_profile, "Missing power_profile");
   assert.ok(npc.power_profile.branch, "Missing power_profile.branch");
@@ -114,6 +116,10 @@ it("Matches exact canonical Myria schema with power_profile object", () => {
   assert.ok(npc.power_profile.aura_color, "Missing power_profile.aura_color");
   assert.ok(npc.power_profile.racial_boost, "Missing power_profile.racial_boost");
   assert.ok(npc.power_profile.description, "Missing power_profile.description");
+  assert.ok(npc.ideal, "Missing ideal");
+  assert.ok(npc.bond, "Missing bond");
+  assert.ok(npc.flaw, "Missing flaw");
+  assert.ok(npc.fear, "Missing fear");
   assert.ok(npc.quirk, "Missing quirk");
   assert.ok(npc.trinket, "Missing trinket");
   assert.ok(npc.secret, "Missing secret");
@@ -151,6 +157,17 @@ it("Enforces gender constraints on Wild Magic (Female only) and Awakener (Male o
     const maleNpc = generateMyriaNpc(`seed_male_${i}`, { gender: "male" });
     assert.equal(maleNpc.gender, "Male");
     assert.notEqual(maleNpc.power_profile.branch, "Wild Magic", "Wild Magic cannot be Male");
+  }
+});
+
+it("Partitions names strictly by race and nation cultural pools", () => {
+  for (let i = 0; i < 70; i++) {
+    const npc = generateMyriaNpc(`seed_name_test_${i}`);
+    assert.ok(npc.name, "Name must be defined");
+    assert.ok(npc.homeland, "Homeland must be defined");
+    assert.ok(npc.nation, "Nation must be defined");
+    const nameParts = npc.name.split(' ');
+    assert(nameParts.length >= 2, `Full name '${npc.name}' must contain first and last name`);
   }
 });
 

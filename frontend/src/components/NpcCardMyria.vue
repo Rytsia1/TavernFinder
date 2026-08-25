@@ -17,7 +17,12 @@ import {
   Sword,
   Wand2,
   Skull,
-  Feather
+  Feather,
+  MapPin,
+  Compass,
+  Heart,
+  AlertTriangle,
+  Ghost
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -69,7 +74,6 @@ const powerBranchIcon = computed(() => {
   <div class="w-full max-w-4xl mx-auto rounded-2xl fantasy-card overflow-hidden transition-all duration-300">
     <!-- Card Header Banner -->
     <div class="relative px-6 py-6 sm:px-8 sm:py-7 border-b border-tavern-border/80 bg-gradient-to-r from-tavern-900 via-tavern-850 to-tavern-900">
-      <!-- Glow background -->
       <div class="absolute inset-0 bg-parchment-glow pointer-events-none opacity-40"></div>
 
       <div class="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -84,6 +88,10 @@ const powerBranchIcon = computed(() => {
               :class="npc.gender === 'Female' ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' : 'bg-sky-500/10 text-sky-300 border-sky-500/30'"
             >
               {{ npc.gender }}
+            </span>
+            <span v-if="npc.homeland || npc.nation" class="inline-flex items-center gap-1 text-xs text-amber-300/90 font-medium bg-tavern-800/80 px-2 py-0.5 rounded-full border border-amber-500/20">
+              <MapPin class="w-3 h-3 text-amber-400" />
+              {{ npc.homeland || npc.nation }}
             </span>
             <span class="inline-flex items-center gap-1 text-xs text-slate-400 font-mono bg-tavern-800/80 px-2 py-0.5 rounded border border-tavern-border">
               <Hash class="w-3 h-3 text-slate-500" />
@@ -140,8 +148,51 @@ const powerBranchIcon = computed(() => {
     </div>
 
     <!-- Main Details Grid -->
-    <div class="p-6 sm:p-8 space-y-5">
-      <!-- Persona & Quirk -->
+    <div class="p-6 sm:p-8 space-y-6">
+      <!-- Roleplay Pillars: Ideal, Bond, Flaw -->
+      <div v-if="npc.ideal || npc.bond || npc.flaw" class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 font-cinzel flex items-center gap-1.5">
+          <Compass class="w-3.5 h-3.5 text-amber-400" />
+          Roleplay Pillars & Morality
+        </h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <!-- Core Ideal -->
+          <div class="p-3.5 rounded-xl bg-tavern-900/80 border border-tavern-border/70 hover:border-amber-500/30 transition-colors">
+            <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1">
+              <Compass class="w-3 h-3 text-amber-400" />
+              Core Ideal
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed font-sans">
+              {{ npc.ideal }}
+            </p>
+          </div>
+
+          <!-- Deep Bond -->
+          <div class="p-3.5 rounded-xl bg-tavern-900/80 border border-tavern-border/70 hover:border-emerald-500/30 transition-colors">
+            <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
+              <Heart class="w-3 h-3 text-emerald-400" />
+              Deep Bond
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed font-sans">
+              {{ npc.bond }}
+            </p>
+          </div>
+
+          <!-- Fatal Flaw -->
+          <div class="p-3.5 rounded-xl bg-tavern-900/80 border border-tavern-border/70 hover:border-rose-500/30 transition-colors">
+            <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-rose-400 mb-1">
+              <AlertTriangle class="w-3 h-3 text-rose-400" />
+              Fatal Flaw
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed font-sans">
+              {{ npc.flaw }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persona, Quirk & Trinket -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Quirk -->
         <div class="p-4 rounded-xl bg-tavern-900/70 border border-tavern-border/70 hover:border-amber-500/30 transition-colors">
@@ -155,8 +206,8 @@ const powerBranchIcon = computed(() => {
         </div>
 
         <!-- Pocket Trinket -->
-        <div class="p-4 rounded-xl bg-tavern-900/70 border border-tavern-border/70 hover:border-amber-500/30 transition-colors">
-          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-300 mb-1.5">
+        <div class="p-4 rounded-xl bg-tavern-900/70 border border-tavern-border/70 hover:border-sky-500/30 transition-colors">
+          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sky-400 mb-1.5">
             <Key class="w-3.5 h-3.5" />
             Pocket Trinket
           </div>
@@ -166,15 +217,29 @@ const powerBranchIcon = computed(() => {
         </div>
       </div>
 
-      <!-- Lore Secret -->
-      <div class="p-4 rounded-xl bg-tavern-850/60 border border-purple-500/20 hover:border-purple-500/40 transition-colors">
-        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-purple-400 mb-1.5">
-          <EyeOff class="w-3.5 h-3.5 text-purple-400" />
-          Metaphysical / Lore Secret
+      <!-- Fear & Secret -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Internal Fear -->
+        <div v-if="npc.fear" class="p-4 rounded-xl bg-tavern-850/60 border border-rose-500/20 hover:border-rose-500/40 transition-colors">
+          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-rose-400 mb-1.5">
+            <Ghost class="w-3.5 h-3.5 text-rose-400" />
+            Internal Fear
+          </div>
+          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+            {{ npc.fear }}
+          </p>
         </div>
-        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
-          {{ npc.secret }}
-        </p>
+
+        <!-- Lore Secret -->
+        <div class="p-4 rounded-xl bg-tavern-850/60 border border-purple-500/20 hover:border-purple-500/40 transition-colors">
+          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-purple-400 mb-1.5">
+            <EyeOff class="w-3.5 h-3.5 text-purple-400" />
+            Metaphysical / Lore Secret
+          </div>
+          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+            {{ npc.secret }}
+          </p>
+        </div>
       </div>
     </div>
   </div>

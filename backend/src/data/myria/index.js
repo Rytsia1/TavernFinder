@@ -3,6 +3,8 @@
  */
 
 export { myriaRaces } from './races.js';
+export { myriaNations } from './nations.js';
+export { myriaNamingPools } from './myriaNames.js';
 export {
   powerBranches,
   tierMagicLadders,

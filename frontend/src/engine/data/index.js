@@ -25,6 +25,8 @@ export {
 export * as myriaData from './myria/index.js';
 export {
   myriaRaces,
+  myriaNations,
+  myriaNamingPools,
   powerBranches,
   tierMagicLadders,
   auraLadders,

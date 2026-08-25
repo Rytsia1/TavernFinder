@@ -1,16 +1,19 @@
 /**
- * Canonical Myria Procedural Generator
- * Adheres strictly to the metaphysical rules, racial bonuses, aura colors, and tier ladders of Myria.
+ * Canonical Myria Procedural Generator (Client-Side Fallback Engine)
+ * Generates characters strictly adhering to Myria's metaphysics, racial attribute boosts,
+ * elemental aura affinities, nation-specific cultural naming pools, and D&D-style roleplay pillars
+ * (Core Ideal, Deep Bond, Fatal Flaw, Dark Secret, Internal Fear, Pocket Trinket).
  */
 
 import { PRNG } from './prng.js';
 import {
-  maleNames,
-  femaleNames,
-  firstNames,
-  surnames,
   quirks,
+  ideals,
+  bonds,
+  flaws,
   myriaRaces,
+  myriaNations,
+  myriaNamingPools,
   powerBranches,
   tierMagicLadders,
   auraLadders,
@@ -23,12 +26,11 @@ import {
   myriaPersonalities
 } from './data/index.js';
 
-
 /**
- * Generates an authentic Myria NPC deterministically using a seeded PRNG.
+ * Generates an authentic Myria NPC deterministically with cultural names, roleplay pillars, and lore hooks.
  * 
  * @param {string|number} [seed] - Optional seed for deterministic generation
- * @param {Object} [options] - Options (e.g., gender)
+ * @param {Object} [options] - Options (e.g., gender, race)
  * @returns {Object} Canonical Myria NPC payload
  */
 export function generateMyriaNpc(seed, options = {}) {
@@ -63,14 +65,18 @@ export function generateMyriaNpc(seed, options = {}) {
     }
   }
 
-  // 2. Select Name based on resolved gender
-  const namePool = selectedGender === 'Male' ? maleNames : femaleNames;
-  const firstName = prng.pick(namePool) || prng.pick(firstNames);
-  const surname = prng.pick(surnames);
-  const fullName = `${firstName} ${surname}`;
-
-  // 3. Select Race & Extract Elemental Aura Affinities
+  // 2. Select Race & Associated Homeland / Nation
   const race = prng.weightedPick(myriaRaces, (r) => r.baseWeight ?? 1);
+  const nation = myriaNations[race.id] || myriaNations.human;
+
+  // 3. Cultural Naming Pool strictly sampled from the NPC's Nation / Race
+  const namingPoolKey = nation.namingPool || 'varencia';
+  const namingPool = myriaNamingPools[namingPoolKey] || myriaNamingPools.varencia;
+  const firstNamesList = selectedGender === 'Male' ? namingPool.male : namingPool.female;
+
+  const firstName = prng.pick(firstNamesList) || (selectedGender === 'Male' ? 'Albrecht' : 'Adrienne');
+  const surname = prng.pick(namingPool.surnames) || 'Ardent';
+  const fullName = `${firstName} ${surname}`;
 
   // 4. Generate Power Profile Details
   let rankStr = "";
@@ -85,7 +91,6 @@ export function generateMyriaNpc(seed, options = {}) {
     rankStr = auraObj.rank;
     powerDesc = `A ${race.auraColor.toLowerCase()} aura wraps around their frame in moments of tension. ${auraObj.description}`;
   } else if (selectedBranchObj.id === 'wild_magic') {
-    // If female, pick from wild magic subtypes
     const validWild = wildMagicSubtypes.filter(w => !w.genderRequirement || w.genderRequirement === selectedGender);
     const wildObj = prng.weightedPick(validWild, (w) => w.weight);
     const generated = wildObj.generator(prng, race);
@@ -114,41 +119,41 @@ export function generateMyriaNpc(seed, options = {}) {
     description: powerDesc
   };
 
-  // 5. Select Occupation
+  // 5. Select Occupation & Dominant Personality
   const occupation = prng.weightedPick(myriaOccupations, (occ) => occ.baseWeight ?? 1);
-
-  // 6. Select Dominant Personality
   const personality = prng.weightedPick(myriaPersonalities, (pers) => {
     return occupation.traitWeights?.[pers.id] ?? 1;
   });
 
-  // 7. Select Fear (5x weight for matching tags)
+  // 6. Select Core Roleplay Pillars (Ideals, Bonds, Flaws)
+  const ideal = prng.pick(ideals);
+  const bond = prng.pick(bonds);
+  const flaw = prng.pick(flaws);
+
+  // 7. Select Narrative Hooks (Internal Fear, Dark Secret, Sensory Quirk & Pocket Trinket)
   const fear = prng.weightedPick(myriaFears, (item) => {
     return item.tags?.includes(occupation.tag) ? 5 : 1;
   });
 
-  // 8. Select Secret (5x weight for matching tags)
   const secret = prng.weightedPick(myriaSecrets, (item) => {
     return item.tags?.includes(occupation.tag) ? 5 : 1;
   });
 
-  // 9. Select Sensory / Physical Quirk
   const quirk = prng.pick(quirks);
-
-  // 10. Select Canonical Myria Trinket
   const trinket = prng.pick(myriaTrinkets);
 
-  // 11. Select Contextual Dialogue
+  // 8. Select Contextual Dialogue
   const dialoguePool = personality.dialogue && personality.dialogue.length > 0
     ? personality.dialogue
     : ["Keep your voice low. The Ley Lines carry whispers further than the wind."];
   const dialogueTemplate = prng.pick(dialoguePool);
 
-  // 12. Interpolate Dialogue with Lore Tokens
+  // 9. Interpolate Dialogue with Lore Tokens
   const dialogue = dialogueTemplate
     .replace(/\{name\}/g, fullName)
     .replace(/\{title\}/g, occupation.title)
     .replace(/\{race\}/g, race.name)
+    .replace(/\{homeland\}/g, nation.name)
     .replace(/\{element\}/g, race.element)
     .replace(/\{auraColor\}/g, race.auraColor)
     .replace(/\{powerBranch\}/g, selectedBranchObj.name)
@@ -156,27 +161,31 @@ export function generateMyriaNpc(seed, options = {}) {
     .replace(/\{secret\}/g, secret.text.toLowerCase())
     .replace(/\{personality\}/g, personality.name.toLowerCase());
 
-  // 13. Assemble Obsidian / Notion-Ready Markdown Block
+  // 10. Assemble Obsidian / Notion-Ready Markdown Block
   const markdown = [
     `# 🔮 **${fullName}** — *${occupation.title}*`,
     `> *"${dialogue}"*`,
     ``,
     `### ⚡ **Myria Lineage & Metaphysics**`,
     `- **Race:** ${race.name} (Aura: *${race.auraColor}* | Element: *${race.element}*)`,
+    `- **Homeland:** ${nation.name} *(Capital: ${nation.capital})*`,
     `- **Racial Attribute Boost:** ${race.racialBoost}`,
     `- **Gender:** ${selectedGender}`,
     `- **Power Branch:** ${selectedBranchObj.name}`,
     `- **Rank & Mastery:** ${rankStr}`,
     `- **Manifestation:** ${powerDesc}`,
     ``,
-    `### 📜 **Persona & Quirk**`,
+    `### 📜 **Persona & Roleplay Pillars**`,
     `- **Personality:** ${personality.name}`,
+    `- **Core Ideal:** ${ideal}`,
+    `- **Deep Bond:** ${bond}`,
+    `- **Fatal Flaw:** ${flaw}`,
     `- **Physical Quirk:** ${quirk}`,
     `- **Pocket Trinket:** ${trinket}`,
     ``,
     `### 🗝️ **Narrative Hooks & Lore Secrets**`,
     `- **Internal Fear:** ${fear.text}`,
-    `- **Lore Secret:** ${secret.text}`
+    `- **Dark Secret:** ${secret.text}`
   ].join('\n');
 
   return {
@@ -185,10 +194,18 @@ export function generateMyriaNpc(seed, options = {}) {
     name: fullName,
     gender: selectedGender,
     race: race.name,
+    homeland: nation.name,
+    nation: nation.name,
+    capital: nation.capital,
     occupation: occupation.title,
+    personality: personality.name,
     power_profile: powerProfile,
+    ideal: ideal,
+    bond: bond,
+    flaw: flaw,
     quirk: quirk,
     trinket: trinket,
+    fear: fear.text,
     secret: secret.text,
     dialogue: dialogue,
     markdown: markdown
