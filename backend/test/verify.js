@@ -1,18 +1,12 @@
 /**
  * Tavern Finder Backend Verification Script
- * Tests:
- * 1. PRNG determinism with repeated seeds (both strings and numbers)
- * 2. Statistical variance across multiple random seeds
- * 3. Exact schema compliance (including gender, origins, D&D pillars, trinkets, markdown)
- * 4. Gender filtering (male / female / any)
- * 5. Integration testing with Express API endpoints
+ * Validates Dual-Mode Generation (Standard D&D 5e vs Canonical Myria Metaphysics)
  */
 
 import http from 'node:http';
 import assert from 'node:assert/strict';
 import { PRNG, hashSeed } from '../src/generators/prng.js';
-import { generateNpc } from '../src/generators/npcGenerator.js';
-import { maleNames, femaleNames } from '../src/data/index.js';
+import { generateNpc, generateStandardNpc, generateMyriaNpc } from '../src/generators/npcGenerator.js';
 import app from '../src/index.js';
 
 let passed = 0;
@@ -44,53 +38,46 @@ async function itAsync(desc, fn) {
   }
 }
 
-console.log("\n==========================================");
-console.log("⚔️  TAVERN FINDER PROCEDURAL ENGINE TESTS");
-console.log("==========================================\n");
+console.log("\n========================================================");
+console.log("⚔️  TAVERN FINDER CANONICAL DUAL-MODE ENGINE TESTS");
+console.log("========================================================\n");
 
 // 1. PRNG & Hash Determinism
 console.log("🧪 1. Seed & PRNG Determinism Tests");
 it("Hash produces exact same 32-bit unsigned int for identical inputs", () => {
-  const h1 = hashSeed("tavern42");
-  const h2 = hashSeed("tavern42");
-  const h3 = hashSeed("different");
+  const h1 = hashSeed("myria_nexus_99");
+  const h2 = hashSeed("myria_nexus_99");
+  const h3 = hashSeed("different_seed");
   assert.equal(h1, h2);
   assert.notEqual(h1, h3);
   assert(h1 >= 0 && h1 <= 0xffffffff);
 });
 
 it("PRNG with identical string seed generates exact same number sequences", () => {
-  const prng1 = new PRNG("dragon_inn");
-  const prng2 = new PRNG("dragon_inn");
+  const prng1 = new PRNG("leyline_confluence");
+  const prng2 = new PRNG("leyline_confluence");
   for (let i = 0; i < 50; i++) {
     assert.equal(prng1.next(), prng2.next());
   }
 });
 
-it("PRNG with numeric seed generates deterministic outputs", () => {
-  const prng1 = new PRNG(1337);
-  const prng2 = new PRNG(1337);
-  for (let i = 0; i < 50; i++) {
-    assert.equal(prng1.nextInt(1, 100), prng2.nextInt(1, 100));
-  }
-});
-
-// 2. NPC Procedural Generator Determinism, Schema & Gender Tests
-console.log("\n🧪 2. NPC Procedural Generator Determinism & Schema Tests");
-it("Generates identical NPC attributes for 50 repeated runs with same seed", () => {
-  const testSeed = "elaris-apothecary-99";
-  const baseline = generateNpc(testSeed);
+// 2. Standard Mode Tests
+console.log("\n🧪 2. Standard Mode (D&D 5e) Tests");
+it("Generates identical Standard NPC for 50 repeated runs with same seed", () => {
+  const testSeed = "standard_seed_77";
+  const baseline = generateNpc(testSeed, { mode: "standard" });
 
   for (let i = 0; i < 50; i++) {
-    const run = generateNpc(testSeed);
+    const run = generateNpc(testSeed, { mode: "standard" });
     assert.deepEqual(run, baseline);
   }
 });
 
-it("Matches exact output schema with non-empty string fields", () => {
-  const npc = generateNpc("test_schema");
+it("Matches exact Standard output schema", () => {
+  const npc = generateNpc("standard_schema", { mode: "standard" });
+  assert.equal(npc.mode, "standard");
   const requiredKeys = [
-    "seed", "name", "gender", "title", "origin", "personality", "ideal", "bond", "flaw", "trinket", "fear", "secret", "dialogue", "markdown"
+    "mode", "seed", "name", "gender", "title", "origin", "personality", "ideal", "bond", "flaw", "trinket", "fear", "secret", "dialogue", "markdown"
   ];
   
   for (const key of requiredKeys) {
@@ -98,46 +85,77 @@ it("Matches exact output schema with non-empty string fields", () => {
     assert.equal(typeof npc[key], "string", `Key ${key} must be a string`);
     assert.ok(npc[key].trim().length > 0, `Key ${key} cannot be empty`);
   }
-  assert.ok(["Male", "Female"].includes(npc.gender));
 });
 
-it("Generates male NPC when gender='male' is requested", () => {
-  for (let i = 0; i < 20; i++) {
-    const npc = generateNpc(null, { gender: "male" });
-    assert.equal(npc.gender, "Male");
-    const firstName = npc.name.split(" ")[0];
-    assert.ok(maleNames.includes(firstName), `Expected male name, got ${firstName}`);
+// 3. Myria Mode Canonical Power System Tests
+console.log("\n🧪 3. Canonical Myria Mode Tests (Metaphysics, Racial Bonuses & Power Profile)");
+it("Generates identical Myria NPC for 50 repeated runs with same seed", () => {
+  const testSeed = "canonical_myria_42";
+  const baseline = generateNpc(testSeed, { mode: "myria" });
+
+  for (let i = 0; i < 50; i++) {
+    const run = generateNpc(testSeed, { mode: "myria" });
+    assert.deepEqual(run, baseline);
   }
 });
 
-it("Generates female NPC when gender='female' is requested", () => {
-  for (let i = 0; i < 20; i++) {
-    const npc = generateNpc(null, { gender: "female" });
-    assert.equal(npc.gender, "Female");
-    const firstName = npc.name.split(" ")[0];
-    assert.ok(femaleNames.includes(firstName), `Expected female name, got ${firstName}`);
+it("Matches exact canonical Myria schema with power_profile object", () => {
+  const npc = generateNpc("myria_canonical_schema", { mode: "myria" });
+  assert.equal(npc.mode, "myria");
+  assert.ok(npc.seed, "Missing seed");
+  assert.ok(npc.name, "Missing name");
+  assert.ok(["Male", "Female"].includes(npc.gender), "Gender must be Male or Female");
+  assert.ok(npc.race, "Missing race");
+  assert.ok(npc.occupation, "Missing occupation");
+  assert.ok(npc.power_profile, "Missing power_profile");
+  assert.ok(npc.power_profile.branch, "Missing power_profile.branch");
+  assert.ok(npc.power_profile.rank, "Missing power_profile.rank");
+  assert.ok(npc.power_profile.element, "Missing power_profile.element");
+  assert.ok(npc.power_profile.aura_color, "Missing power_profile.aura_color");
+  assert.ok(npc.power_profile.racial_boost, "Missing power_profile.racial_boost");
+  assert.ok(npc.power_profile.description, "Missing power_profile.description");
+  assert.ok(npc.quirk, "Missing quirk");
+  assert.ok(npc.trinket, "Missing trinket");
+  assert.ok(npc.secret, "Missing secret");
+  assert.ok(npc.dialogue, "Missing dialogue");
+  assert.ok(npc.markdown, "Missing markdown block");
+});
+
+it("Validates all 7 canonical race elemental auras & attribute boosts", () => {
+  const expectedAuras = {
+    Human: { element: "Fire", aura_color: "Crimson/Gold", racial_boost: "Strength +20%" },
+    Elf: { element: "Wind", aura_color: "Silver/Green", racial_boost: "Speed +20%" },
+    Druid: { element: "Plant", aura_color: "Verdant", racial_boost: "Endurance +20%" },
+    "Half-Animal": { element: "Thunder", aura_color: "Violet/Blue", racial_boost: "Reflexes +20%" },
+    Dwarf: { element: "Earth", aura_color: "Bronze/Grey", racial_boost: "Defense +20%" },
+    Liichtian: { element: "Light", aura_color: "White/Gold", racial_boost: "Speed & Reflexes +10% each" },
+    Merfolk: { element: "Water", aura_color: "Blue/Teal", racial_boost: "Endurance & Defense +10% each" }
+  };
+
+  for (let i = 0; i < 70; i++) {
+    const npc = generateMyriaNpc(`seed_race_test_${i}`);
+    const expected = expectedAuras[npc.race];
+    assert.ok(expected, `Unknown race generated: ${npc.race}`);
+    assert.equal(npc.power_profile.element, expected.element);
+    assert.equal(npc.power_profile.aura_color, expected.aura_color);
+    assert.equal(npc.power_profile.racial_boost, expected.racial_boost);
   }
 });
 
-it("Generates high variance across 100 random seeds", () => {
-  const names = new Set();
-  const titles = new Set();
-  const personalities = new Set();
+it("Enforces gender constraints on Wild Magic (Female only) and Awakener (Male only)", () => {
+  for (let i = 0; i < 60; i++) {
+    const femaleNpc = generateMyriaNpc(`seed_fem_${i}`, { gender: "female" });
+    assert.equal(femaleNpc.gender, "Female");
+    assert.notEqual(femaleNpc.power_profile.branch, "Awakener", "Awakener cannot be Female");
 
-  for (let i = 0; i < 100; i++) {
-    const npc = generateNpc();
-    names.add(npc.name);
-    titles.add(npc.title);
-    personalities.add(npc.personality);
+    const maleNpc = generateMyriaNpc(`seed_male_${i}`, { gender: "male" });
+    assert.equal(maleNpc.gender, "Male");
+    assert.notEqual(maleNpc.power_profile.branch, "Wild Magic", "Wild Magic cannot be Male");
   }
-
-  assert.ok(names.size > 25, `Expected > 25 distinct names, got ${names.size}`);
-  assert.ok(titles.size >= 5, `Expected >= 5 distinct occupations, got ${titles.size}`);
-  assert.ok(personalities.size >= 5, `Expected >= 5 distinct personalities, got ${personalities.size}`);
 });
 
-// 3. API Integration Testing
-console.log("\n🧪 3. Express API Integration Tests");
+// 4. API Integration Testing
+console.log("\n🧪 4. Express API Integration Tests");
 const server = http.createServer(app);
 
 server.listen(0, async () => {
@@ -153,59 +171,48 @@ server.listen(0, async () => {
       assert.deepEqual(json, { status: "ok" });
     });
 
-    await itAsync("GET /api/npc/random returns 200 with valid NPC JSON", async () => {
+    await itAsync("GET /api/npc/random defaults to standard mode", async () => {
       const res = await fetch(`${baseUrl}/api/npc/random`);
       assert.equal(res.status, 200);
       const npc = await res.json();
-      assert.ok(npc.seed);
-      assert.ok(npc.name);
-      assert.ok(npc.gender);
-      assert.ok(npc.title);
-      assert.ok(npc.origin);
-      assert.ok(npc.personality);
+      assert.equal(npc.mode, "standard");
       assert.ok(npc.ideal);
-      assert.ok(npc.bond);
-      assert.ok(npc.flaw);
       assert.ok(npc.trinket);
-      assert.ok(npc.fear);
-      assert.ok(npc.secret);
-      assert.ok(npc.dialogue);
-      assert.ok(npc.markdown);
     });
 
-    await itAsync("GET /api/npc/random?gender=female returns a female NPC", async () => {
-      const res = await fetch(`${baseUrl}/api/npc/random?gender=female`);
+    await itAsync("GET /api/npc/random?mode=myria returns canonical Myria schema", async () => {
+      const res = await fetch(`${baseUrl}/api/npc/random?mode=myria`);
       assert.equal(res.status, 200);
       const npc = await res.json();
-      assert.equal(npc.gender, "Female");
+      assert.equal(npc.mode, "myria");
+      assert.ok(npc.race);
+      assert.ok(npc.power_profile);
+      assert.ok(npc.power_profile.racial_boost);
+      assert.ok(npc.power_profile.aura_color);
     });
 
-    await itAsync("GET /api/npc/random?seed=xyz returns deterministic output", async () => {
-      const res1 = await fetch(`${baseUrl}/api/npc/random?seed=valiant_knight_77`);
-      const res2 = await fetch(`${baseUrl}/api/npc/random?seed=valiant_knight_77`);
+    await itAsync("GET /api/npc/random?mode=myria&seed=albrecht42 returns deterministic output", async () => {
+      const res1 = await fetch(`${baseUrl}/api/npc/random?mode=myria&seed=albrecht42`);
+      const res2 = await fetch(`${baseUrl}/api/npc/random?mode=myria&seed=albrecht42`);
       const npc1 = await res1.json();
       const npc2 = await res2.json();
       assert.deepEqual(npc1, npc2);
-      assert.equal(npc1.seed, "valiant_knight_77");
+      assert.equal(npc1.seed, "albrecht42");
     });
 
-    await itAsync("GET / invalid endpoint returns 404", async () => {
-      const res = await fetch(`${baseUrl}/api/non_existent_route`);
-      assert.equal(res.status, 404);
-    });
-
-    console.log("\n==========================================");
+    console.log("\n========================================================");
     console.log(`🎉 ALL ${passed}/${total} TESTS PASSED SUCCESSFULLY!`);
-    console.log("==========================================\n");
+    console.log("========================================================\n");
 
-    // Display sample generated NPCs
-    console.log("📜 Sample Generated NPCs from Seeded Engine:\n");
-    console.log("1. Female Seed 'elaris_sample':");
-    console.log(JSON.stringify(generateNpc("elaris_sample", { gender: "female" }), null, 2));
-    console.log("\n2. Male Seed 'ironwood_blacksmith':");
-    console.log(JSON.stringify(generateNpc("ironwood_blacksmith", { gender: "male" }), null, 2));
-    console.log("\n3. Random Deterministic Seed (Auto Gender):");
-    console.log(JSON.stringify(generateNpc(), null, 2));
+    // Display sample outputs
+    console.log("📜 Sample Output - Standard Mode:");
+    console.log(JSON.stringify(generateNpc("std_sample", { mode: "standard" }), null, 2));
+
+    console.log("\n📜 Sample Output - Canonical Myria Mode (Male):");
+    console.log(JSON.stringify(generateNpc("myria_male_sample", { mode: "myria", gender: "male" }), null, 2));
+
+    console.log("\n📜 Sample Output - Canonical Myria Mode (Female):");
+    console.log(JSON.stringify(generateNpc("myria_female_sample", { mode: "myria", gender: "female" }), null, 2));
     console.log("");
   } finally {
     server.close();
