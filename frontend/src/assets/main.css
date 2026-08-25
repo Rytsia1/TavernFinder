@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0c0c0f;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #111114;
+}
+::-webkit-scrollbar-thumb {
+  background: #2b2b38;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
+
+/* Atmospheric Glows & Animations */
+@keyframes torchFlicker {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.02); }
+  75% { opacity: 0.80; transform: scale(0.99); }
+}
+
+.animate-torch {
+  animation: torchFlicker 6s ease-in-out infinite;
+}
+
+/* Fantasy Card Shimmer */
+.fantasy-card {
+  position: relative;
+  background: linear-gradient(180deg, #181820 0%, #121216 100%);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px -5px rgba(245, 158, 11, 0.05);
+}
+
+.fantasy-card:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(245, 158, 11, 0.1);
+}
+
+/* Elemental Aura Badges */
+.aura-fire {
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+.aura-wind {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #a7f3d0;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
+}
+
+.aura-plant {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(74, 222, 128, 0.4);
+  color: #bbf7d0;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.2);
+}
+
+.aura-thunder {
+  background: rgba(147, 51, 234, 0.12);
+  border-color: rgba(192, 132, 252, 0.4);
+  color: #e9d5ff;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.2);
+}
+
+.aura-earth {
+  background: rgba(217, 119, 6, 0.12);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fde68a;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+}
+
+.aura-light {
+  background: rgba(253, 224, 71, 0.12);
+  border-color: rgba(254, 240, 138, 0.4);
+  color: #fef08a;
+  box-shadow: 0 0 15px rgba(254, 240, 138, 0.25);
+}
+
+.aura-water {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #bae6fd;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+}
