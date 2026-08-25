@@ -7,3 +7,5 @@ export { occupations } from './occupations.js';
 export { personalities } from './personalities.js';
 export { fears } from './fears.js';
 export { secrets } from './secrets.js';
+export { quirks } from './quirks.js';
+export { goals } from './goals.js';

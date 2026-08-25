@@ -1,5 +1,6 @@
 /**
- * Atmospheric Fantasy Names Dataset
+ * Atmospheric Fantasy Names & Epithets Dataset
+ * Curated for tabletop RPG narrative depth.
  */
 
 export const firstNames = [
@@ -33,11 +34,40 @@ export const firstNames = [
   "Rowena",
   "Cassian",
   "Torin",
-  "Oakhaven",
-  "Barrow",
   "Fenris",
   "Gwendolyn",
-  "Kellan"
+  "Kellan",
+  "Branwen",
+  "Gareth",
+  "Elowen",
+  "Dunstan",
+  "Cedric",
+  "Yvaine",
+  "Mathas",
+  "Vivienne",
+  "Thorne",
+  "Kaelis",
+  "Siobhan",
+  "Lucian",
+  "Delphine",
+  "Balthazar",
+  "Rhiannon",
+  "Morgana",
+  "Alistair",
+  "Valerius",
+  "Ignatius",
+  "Evander",
+  "Seraphina",
+  "Tobias",
+  "Corvus",
+  "Leona",
+  "Percival",
+  "Thaddeus",
+  "Morcant",
+  "Oakhaven",
+  "Barrow",
+  "Caelum",
+  "Nerys"
 ];
 
 export const surnames = [
@@ -66,5 +96,35 @@ export const surnames = [
   "Deepvale",
   "Barrowdown",
   "Foxglove",
-  "Cinderfall"
+  "Cinderfall",
+  "Blackweir",
+  "Wyrmtooth",
+  "Coldwater",
+  "Ashworth",
+  "Bitterroot",
+  "Oathkeeper",
+  "Bonecarver",
+  "Duskwood",
+  "Hallowell",
+  "Ironshod",
+  "Locksmith",
+  "Shadowhand",
+  "Highwater",
+  "Stormborn",
+  "Netheridge",
+  "Ravenscroft",
+  "Kettleblack",
+  "Quickfinger",
+  "Brassbound",
+  "Muckraker",
+  "Bloodworth",
+  "Starling",
+  "Wintermire",
+  "the Crow-Feeder",
+  "the Unbroken",
+  "the Twice-Hanged",
+  "the Whispering Smith",
+  "the Pale",
+  "the Red-Eyed",
+  "the Silent"
 ];

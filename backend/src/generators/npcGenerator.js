@@ -62,10 +62,14 @@ export function generateNpc(seed) {
     : ["..."];
   const dialogueTemplate = prng.pick(dialoguePool);
 
-  // 7. Format clean dialogue string
+  // 7. Format clean dialogue string with rich contextual interpolation
   const dialogue = dialogueTemplate
     .replace(/\{name\}/g, fullName)
-    .replace(/\{title\}/g, occupation.title);
+    .replace(/\{title\}/g, occupation.title)
+    .replace(/\{fear\}/g, fear.text.toLowerCase())
+    .replace(/\{secret\}/g, secret.text.toLowerCase())
+    .replace(/\{personality\}/g, personality.name.toLowerCase());
+
 
   return {
     seed: prng.rawSeed,
