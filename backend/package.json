@@ -1,0 +1,27 @@
+{
+  "name": "tavern-finder-backend",
+  "version": "1.0.0",
+  "description": "Lightweight, atmospheric fantasy NPC procedural generation engine",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node test/verify.js"
+  },
+  "keywords": [
+    "npc-generator",
+    "procedural-generation",
+    "fantasy",
+    "rpg",
+    "prng",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
